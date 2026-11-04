@@ -61,8 +61,8 @@ class set_visibility extends external_api {
 
         $visible = $params['visible'] ? 1 : 0;
         set_coursemodule_visible($cm->id, $visible);
-        \core\event\course_module_updated::create_from_cm(
-            get_coursemodule_from_id('', $cm->id, 0, false, MUST_EXIST), $context)->trigger();
+        $updated = get_coursemodule_from_id('', $cm->id, 0, false, MUST_EXIST);
+        \core\event\course_module_updated::create_from_cm($updated, $context)->trigger();
 
         return ['cmid' => (int)$cm->id, 'visible' => $visible];
     }

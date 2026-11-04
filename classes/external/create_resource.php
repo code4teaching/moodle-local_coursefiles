@@ -57,8 +57,14 @@ class create_resource extends external_api {
      * @param int $visible
      * @return array
      */
-    public static function execute(int $courseid, int $sectionnum, string $name, array $file, string $intro = '',
-            int $visible = 0): array {
+    public static function execute(
+        int $courseid,
+        int $sectionnum,
+        string $name,
+        array $file,
+        string $intro = '',
+        int $visible = 0
+    ): array {
         global $CFG, $DB;
         require_once($CFG->dirroot . '/course/lib.php');
         require_once($CFG->dirroot . '/course/modlib.php');
