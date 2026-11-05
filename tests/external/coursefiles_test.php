@@ -217,15 +217,15 @@ final class coursefiles_test extends \advanced_testcase {
         $course = $this->getDataGenerator()->create_course(['numsections' => 3]);
         $page = $this->getDataGenerator()->create_module('page', ['course' => $course->id, 'section' => 3]);
 
-        $end = external_api::clean_returnvalue(create_section::execute_returns(),
-            create_section::execute($course->id, 'Interfaces'));
+        $result = create_section::execute($course->id, 'Interfaces');
+        $end = external_api::clean_returnvalue(create_section::execute_returns(), $result);
         $this->assertSame(4, $end['sectionnum']);
         $info = get_fast_modinfo($course->id)->get_section_info(4);
         $this->assertSame('Interfaces', $info->name);
         $this->assertEquals(0, $info->visible);
 
-        $front = external_api::clean_returnvalue(create_section::execute_returns(),
-            create_section::execute($course->id, 'Wiederholung', '<p>Aus der 11</p>', 1, 1));
+        $result = create_section::execute($course->id, 'Wiederholung', '<p>Aus der 11</p>', 1, 1);
+        $front = external_api::clean_returnvalue(create_section::execute_returns(), $result);
         $this->assertSame(1, $front['sectionnum']);
         $this->assertEquals(4, get_fast_modinfo($course->id)->get_cm($page->cmid)->sectionnum);
 
@@ -234,8 +234,8 @@ final class coursefiles_test extends \advanced_testcase {
         $this->assertSame('Interfaces und abstrakte Klassen', $info->name);
         $this->assertEquals(1, $info->visible);
 
-        $moved = external_api::clean_returnvalue(move_section::execute_returns(),
-            move_section::execute($course->id, 4, 2));
+        $result = move_section::execute($course->id, 4, 2);
+        $moved = external_api::clean_returnvalue(move_section::execute_returns(), $result);
         $this->assertSame(2, $moved['sectionnum']);
         $this->assertEquals(2, get_fast_modinfo($course->id)->get_cm($page->cmid)->sectionnum);
     }
