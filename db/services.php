@@ -45,6 +45,24 @@ $functions = [
         'type'         => 'write',
         'capabilities' => 'moodle/course:manageactivities',
     ],
+    'local_coursefiles_create_section' => [
+        'classname'    => 'local_coursefiles\external\create_section',
+        'description'  => 'Creates a course section at the end or at a given position (hidden unless visible=1).',
+        'type'         => 'write',
+        'capabilities' => 'moodle/course:update',
+    ],
+    'local_coursefiles_update_section' => [
+        'classname'    => 'local_coursefiles\external\update_section',
+        'description'  => 'Changes name, summary or visibility of a course section.',
+        'type'         => 'write',
+        'capabilities' => 'moodle/course:update, moodle/course:sectionvisibility',
+    ],
+    'local_coursefiles_move_section' => [
+        'classname'    => 'local_coursefiles\external\move_section',
+        'description'  => 'Moves a course section to another position; its activities move with it.',
+        'type'         => 'write',
+        'capabilities' => 'moodle/course:movesections',
+    ],
     'local_coursefiles_set_visibility' => [
         'classname'    => 'local_coursefiles\external\set_visibility',
         'description'  => 'Shows or hides an activity or resource.',

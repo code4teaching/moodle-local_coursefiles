@@ -5,7 +5,7 @@ through the [MCP web service plugin](https://github.com/onbirdev/moodle-webservi
 and show or hide activities.
 
 Moodle core cannot create file resources or folders through web services, and `core_course_edit_module`
-(show/hide) is only available to the Moodle interface itself. This plugin adds:
+(show/hide) and section editing are only available to the Moodle interface itself. This plugin adds:
 
 | Function | What it does |
 | --- | --- |
@@ -13,6 +13,9 @@ Moodle core cannot create file resources or folders through web services, and `c
 | `local_coursefiles_create_folder` | Creates a folder with several files in a course section. |
 | `local_coursefiles_update_files` | Replaces the file of a resource or all files of a folder. The activity keeps its ID, place, settings and completion. |
 | `local_coursefiles_set_visibility` | Shows or hides any activity or resource. |
+| `local_coursefiles_create_section` | Creates a section at the end or at a given position. |
+| `local_coursefiles_update_section` | Changes name, summary or visibility of a section. |
+| `local_coursefiles_move_section` | Moves a section, with its activities, to another position. |
 
 Files are sent in the request as `{filename, content}` with the content base64 encoded. Each file must not be larger
 than the upload limit of the course. New resources and folders are hidden unless `visible=1`.
@@ -37,6 +40,8 @@ Every function checks the capabilities of the token's user, as the Moodle interf
 - `create_folder`: `moodle/course:manageactivities` and `mod/folder:addinstance`
 - `update_files`: `moodle/course:manageactivities` in the activity
 - `set_visibility`: `moodle/course:activityvisibility` in the activity
+- `create_section`, `update_section`: `moodle/course:update` (visibility also `moodle/course:sectionvisibility`)
+- `move_section`: `moodle/course:movesections` and `moodle/course:update`
 
 ## License
 

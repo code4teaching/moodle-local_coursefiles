@@ -30,6 +30,9 @@ use core_external\external_api;
 #[\PHPUnit\Framework\Attributes\CoversClass(create_folder::class)]
 #[\PHPUnit\Framework\Attributes\CoversClass(update_files::class)]
 #[\PHPUnit\Framework\Attributes\CoversClass(set_visibility::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(create_section::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(update_section::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(move_section::class)]
 #[\PHPUnit\Framework\Attributes\CoversClass(\local_coursefiles\local\files::class)]
 final class coursefiles_test extends \advanced_testcase {
     /**
@@ -203,5 +206,62 @@ final class coursefiles_test extends \advanced_testcase {
 
         $this->expectException(\required_capability_exception::class);
         set_visibility::execute($page->cmid, 0);
+    }
+
+    /**
+     * Sections can be created at the end and at a position, renamed, shown and moved.
+     */
+    public function test_sections(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        $course = $this->getDataGenerator()->create_course(['numsections' => 3]);
+        $page = $this->getDataGenerator()->create_module('page', ['course' => $course->id, 'section' => 3]);
+
+        $end = external_api::clean_returnvalue(create_section::execute_returns(),
+            create_section::execute($course->id, 'Interfaces'));
+        $this->assertSame(4, $end['sectionnum']);
+        $info = get_fast_modinfo($course->id)->get_section_info(4);
+        $this->assertSame('Interfaces', $info->name);
+        $this->assertEquals(0, $info->visible);
+
+        $front = external_api::clean_returnvalue(create_section::execute_returns(),
+            create_section::execute($course->id, 'Wiederholung', '<p>Aus der 11</p>', 1, 1));
+        $this->assertSame(1, $front['sectionnum']);
+        $this->assertEquals(4, get_fast_modinfo($course->id)->get_cm($page->cmid)->sectionnum);
+
+        update_section::execute($course->id, 5, 'Interfaces und abstrakte Klassen', null, 1);
+        $info = get_fast_modinfo($course->id)->get_section_info(5);
+        $this->assertSame('Interfaces und abstrakte Klassen', $info->name);
+        $this->assertEquals(1, $info->visible);
+
+        $moved = external_api::clean_returnvalue(move_section::execute_returns(),
+            move_section::execute($course->id, 4, 2));
+        $this->assertSame(2, $moved['sectionnum']);
+        $this->assertEquals(2, get_fast_modinfo($course->id)->get_cm($page->cmid)->sectionnum);
+    }
+
+    /**
+     * Section 0 cannot be moved, and positions must exist.
+     */
+    public function test_move_section_invalid(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        $course = $this->getDataGenerator()->create_course(['numsections' => 2]);
+
+        $this->expectException(\invalid_parameter_exception::class);
+        move_section::execute($course->id, 0, 1);
+    }
+
+    /**
+     * Students cannot create sections.
+     */
+    public function test_create_section_requires_capability(): void {
+        $this->resetAfterTest();
+        $course = $this->getDataGenerator()->create_course();
+        $student = $this->getDataGenerator()->create_and_enrol($course, 'student');
+        $this->setUser($student);
+
+        $this->expectException(\required_capability_exception::class);
+        create_section::execute($course->id, 'Neu');
     }
 }
