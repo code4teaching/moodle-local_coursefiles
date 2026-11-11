@@ -33,6 +33,7 @@ use core_external\external_api;
 #[\PHPUnit\Framework\Attributes\CoversClass(create_section::class)]
 #[\PHPUnit\Framework\Attributes\CoversClass(update_section::class)]
 #[\PHPUnit\Framework\Attributes\CoversClass(move_section::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(backup_course::class)]
 #[\PHPUnit\Framework\Attributes\CoversClass(\local_coursefiles\local\files::class)]
 final class coursefiles_test extends \advanced_testcase {
     /**
@@ -263,5 +264,48 @@ final class coursefiles_test extends \advanced_testcase {
 
         $this->expectException(\required_capability_exception::class);
         create_section::execute($course->id, 'Neu');
+    }
+
+    /**
+     * A backup without user data lands in the plugin area of the calling user.
+     */
+    public function test_backup_course(): void {
+        global $USER;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        $gen = $this->getDataGenerator();
+        $course = $gen->create_course();
+        $gen->create_module('page', ['course' => $course->id]);
+        $gen->enrol_user($gen->create_user()->id, $course->id, 'student');
+
+        $result = external_api::clean_returnvalue(backup_course::execute_returns(), backup_course::execute($course->id));
+        $this->assertStringEndsWith('.mbz', $result['filename']);
+        $this->assertGreaterThan(0, $result['filesize']);
+        $this->assertStringContainsString('/local_coursefiles/backup/' . $course->id . '/', $result['fileurl']);
+
+        $context = \context_user::instance($USER->id);
+        $fs = get_file_storage();
+        $files = $fs->get_area_files($context->id, 'local_coursefiles', 'backup', $course->id, 'id', false);
+        $this->assertCount(1, $files);
+        $this->assertEmpty($fs->get_area_files($context->id, 'user', 'backup', false, 'id', false));
+
+        // A second backup replaces the first.
+        backup_course::execute($course->id);
+        $this->assertCount(1, $fs->get_area_files($context->id, 'local_coursefiles', 'backup', $course->id, 'id', false));
+    }
+
+    /**
+     * Students cannot create backups.
+     */
+    public function test_backup_course_requires_capability(): void {
+        $this->resetAfterTest();
+        $gen = $this->getDataGenerator();
+        $course = $gen->create_course();
+        $student = $gen->create_user();
+        $gen->enrol_user($student->id, $course->id, 'student');
+        $this->setUser($student);
+
+        $this->expectException(\required_capability_exception::class);
+        backup_course::execute($course->id);
     }
 }

@@ -1,5 +1,11 @@
 # Changes
 
+## 0.3.0 (2026-11-12)
+
+- New `backup_course`: a Moodle backup (.mbz) of a course without user data (no users, submissions, grades,
+  logs). Refuses if the site forces user data into backups. The file is kept for the calling user only (one per
+  course) and is downloaded with the token through `webservice/pluginfile.php`.
+
 ## 0.2.0 (2026-11-05)
 
 - New `create_section`, `update_section` and `move_section`: add a course section (at the end or at a position),

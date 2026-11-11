@@ -69,6 +69,13 @@ $functions = [
         'type'         => 'write',
         'capabilities' => 'moodle/course:activityvisibility',
     ],
+    'local_coursefiles_backup_course' => [
+        'classname'    => 'local_coursefiles\\external\\backup_course',
+        'description'  => 'Creates a Moodle backup (.mbz) of a course without user data and returns a download address. ' .
+            'Refuses if the site forces user data into backups.',
+        'type'         => 'write',
+        'capabilities' => 'moodle/backup:backupcourse, moodle/backup:downloadfile',
+    ],
 ];
 
 $services = [

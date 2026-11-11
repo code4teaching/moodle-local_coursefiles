@@ -15,6 +15,7 @@ Moodle core cannot create file resources or folders through web services, and `c
 | `local_coursefiles_set_visibility` | Shows or hides any activity or resource. |
 | `local_coursefiles_create_section` | Creates a section at the end or at a given position. |
 | `local_coursefiles_update_section` | Changes name, summary or visibility of a section. |
+| `local_coursefiles_backup_course` | Creates a Moodle backup (.mbz) of a course **without user data** and returns a download address. |
 | `local_coursefiles_move_section` | Moves a section, with its activities, to another position. |
 
 Files are sent in the request as `{filename, content}` with the content base64 encoded. Each file must not be larger
@@ -42,6 +43,7 @@ Every function checks the capabilities of the token's user, as the Moodle interf
 - `set_visibility`: `moodle/course:activityvisibility` in the activity
 - `create_section`, `update_section`: `moodle/course:update` (visibility also `moodle/course:sectionvisibility`)
 - `move_section`: `moodle/course:movesections` and `moodle/course:update`
+- `backup_course`: `moodle/backup:backupcourse` and `moodle/backup:downloadfile` (teachers have both by default)
 
 ## License
 

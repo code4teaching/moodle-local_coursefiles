@@ -32,3 +32,5 @@ $string['notfilemodule'] = 'This activity is neither a file resource nor a folde
 $string['onefileonly'] = 'A file resource takes exactly one file.';
 $string['pluginname'] = 'Course Files';
 $string['privacy:metadata'] = 'The Course Files plugin does not store any personal data.';
+$string['backupfailed'] = 'The backup could not be created.';
+$string['backupwithusers'] = 'The site settings force user data into course backups. No backup without user data is possible.';
