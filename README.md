@@ -17,6 +17,10 @@ Moodle core cannot create file resources or folders through web services, and `c
 | `local_coursefiles_update_section` | Changes name, summary or visibility of a section. |
 | `local_coursefiles_backup_course` | Creates a Moodle backup (.mbz) of a course **without user data** and returns a download address. |
 | `local_coursefiles_move_section` | Moves a section, with its activities, to another position. |
+| `local_coursefiles_request_course` | Asks for a new course (Moodle course request). |
+| `local_coursefiles_get_course_requests` | Lists the caller's pending requests, or all of them for approvers. |
+| `local_coursefiles_approve_course_request` | Approves a request, optionally with a corrected name and another category. |
+| `local_coursefiles_reject_course_request` | Rejects a request; the reason is sent to the requester. |
 
 Files are sent in the request as `{filename, content}` with the content base64 encoded. Each file must not be larger
 than the upload limit of the course. New resources and folders are hidden unless `visible=1`.
@@ -25,6 +29,7 @@ than the upload limit of the course. New resources and folders are hidden unless
 
 - Moodle 5.0 or later
 - Web services enabled
+- For the course request functions: *Site administration → Courses → Course request → Enable course requests*
 
 ## Installation
 
@@ -44,6 +49,10 @@ Every function checks the capabilities of the token's user, as the Moodle interf
 - `create_section`, `update_section`: `moodle/course:update` (visibility also `moodle/course:sectionvisibility`)
 - `move_section`: `moodle/course:movesections` and `moodle/course:update`
 - `backup_course`: `moodle/backup:backupcourse` and `moodle/backup:downloadfile` (teachers have both by default)
+- `request_course`: `moodle/course:request` (authenticated users have it by default; users who can create courses
+  themselves cannot request one, as in Moodle)
+- `get_course_requests`: own requests for everyone; `all=1` needs `moodle/site:approvecourse`
+- `approve_course_request`, `reject_course_request`: `moodle/site:approvecourse`
 
 ## License
 

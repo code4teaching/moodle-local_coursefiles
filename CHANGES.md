@@ -1,5 +1,12 @@
 # Changes
 
+## 0.4.0 (2026-11-13)
+
+- New `request_course`, `get_course_requests`, `approve_course_request` and `reject_course_request`: Moodle course
+  requests through web services. Teachers ask for a course; approvers list all pending requests, approve them with a
+  corrected name and another category, or reject them with a reason. Moodle core sends the notifications and enrols
+  the requester as teacher, exactly as on `course/pending.php`. Needs *Enable course requests* in the site settings.
+
 ## 0.3.0 (2026-11-12)
 
 - New `backup_course`: a Moodle backup (.mbz) of a course without user data (no users, submissions, grades,

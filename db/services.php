@@ -76,6 +76,30 @@ $functions = [
         'type'         => 'write',
         'capabilities' => 'moodle/backup:backupcourse, moodle/backup:downloadfile',
     ],
+    'local_coursefiles_request_course' => [
+        'classname'    => 'local_coursefiles\\external\\request_course',
+        'description'  => 'Asks for a new course (Moodle course request). Needs course requests to be enabled on the site.',
+        'type'         => 'write',
+        'capabilities' => 'moodle/course:request',
+    ],
+    'local_coursefiles_get_course_requests' => [
+        'classname'    => 'local_coursefiles\\external\\get_course_requests',
+        'description'  => 'Lists pending course requests: the caller\'s own, or all of them for approvers (all=1).',
+        'type'         => 'read',
+    ],
+    'local_coursefiles_approve_course_request' => [
+        'classname'    => 'local_coursefiles\\external\\approve_course_request',
+        'description'  => 'Approves a course request, optionally with a corrected name and another category. ' .
+            'Moodle creates the course, enrols the requester as teacher and notifies them.',
+        'type'         => 'write',
+        'capabilities' => 'moodle/site:approvecourse',
+    ],
+    'local_coursefiles_reject_course_request' => [
+        'classname'    => 'local_coursefiles\\external\\reject_course_request',
+        'description'  => 'Rejects a course request; the reason is sent to the requester.',
+        'type'         => 'write',
+        'capabilities' => 'moodle/site:approvecourse',
+    ],
 ];
 
 $services = [
