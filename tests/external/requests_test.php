@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+
 namespace local_coursefiles\external;
 
 use core_external\external_api;
@@ -32,12 +33,22 @@ use core_external\external_api;
 #[\PHPUnit\Framework\Attributes\CoversClass(\local_coursefiles\local\requests::class)]
 final class requests_test extends \advanced_testcase {
     /**
+     * Turns course requests on and lets all users request courses (no standard role has this capability).
+     */
+    private function enable_requests(): void {
+        global $DB;
+        set_config('enablecourserequests', 1);
+        $roleid = $DB->get_field('role', 'id', ['shortname' => 'user'], MUST_EXIST);
+        assign_capability('moodle/course:request', CAP_ALLOW, $roleid, \context_system::instance()->id, true);
+    }
+
+    /**
      * A teacher asks, the admin corrects the name and approves: the course exists and the teacher is enrolled.
      */
     public function test_request_and_approve(): void {
         global $DB;
         $this->resetAfterTest();
-        set_config('enablecourserequests', 1);
+        $this->enable_requests();
         $cat = $this->getDataGenerator()->create_category(['name' => 'FI']);
         $teacher = $this->getDataGenerator()->create_user();
         $this->setUser($teacher);
@@ -51,8 +62,12 @@ final class requests_test extends \advanced_testcase {
         $this->setAdminUser();
         $all = external_api::clean_returnvalue(get_course_requests::execute_returns(), get_course_requests::execute(1));
         $this->assertCount(1, $all['requests']);
-        $res = approve_course_request::execute($r['requestid'], '2026 12FI2 SebH Objektorientierte Programmierung',
-            '2026 12FI2 SebH OOP', $cat->id);
+        $res = approve_course_request::execute(
+            $r['requestid'],
+            '2026 12FI2 SebH Objektorientierte Programmierung',
+            '2026 12FI2 SebH OOP',
+            $cat->id
+        );
         $res = external_api::clean_returnvalue(approve_course_request::execute_returns(), $res);
         $course = get_course($res['courseid']);
         $this->assertSame('2026 12FI2 SebH OOP', $course->shortname);
@@ -67,7 +82,7 @@ final class requests_test extends \advanced_testcase {
     public function test_reject(): void {
         global $DB;
         $this->resetAfterTest();
-        set_config('enablecourserequests', 1);
+        $this->enable_requests();
         $this->setUser($this->getDataGenerator()->create_user());
         $r = request_course::execute('2026 11FI2 SebH Datenbanken', '2026 11FI2 SebH DB');
         $this->setAdminUser();
@@ -80,7 +95,7 @@ final class requests_test extends \advanced_testcase {
      */
     public function test_shortname_taken(): void {
         $this->resetAfterTest();
-        set_config('enablecourserequests', 1);
+        $this->enable_requests();
         $this->getDataGenerator()->create_course(['shortname' => '2026 11FI2 SebH OOP']);
         $this->setUser($this->getDataGenerator()->create_user());
         $this->expectException(\moodle_exception::class);
@@ -103,7 +118,7 @@ final class requests_test extends \advanced_testcase {
      */
     public function test_approve_requires_capability(): void {
         $this->resetAfterTest();
-        set_config('enablecourserequests', 1);
+        $this->enable_requests();
         $this->setUser($this->getDataGenerator()->create_user());
         $r = request_course::execute('2026 11FI2 SebH Netzwerke', '2026 11FI2 SebH NW');
         $this->setUser($this->getDataGenerator()->create_user());

@@ -24,6 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['backupfailed'] = 'The backup could not be created.';
+$string['backupwithusers'] = 'The site settings force user data into course backups. No backup without user data is possible.';
 $string['filetoobig'] = 'The file {$a->filename} ({$a->size}) is larger than the upload limit of this course ({$a->max}).';
 $string['invalidcontent'] = 'The content of {$a} is not valid base64.';
 $string['invalidfilename'] = 'Invalid or duplicate file name: {$a}';
@@ -32,5 +34,3 @@ $string['notfilemodule'] = 'This activity is neither a file resource nor a folde
 $string['onefileonly'] = 'A file resource takes exactly one file.';
 $string['pluginname'] = 'Course Files';
 $string['privacy:metadata'] = 'The Course Files plugin does not store any personal data.';
-$string['backupfailed'] = 'The backup could not be created.';
-$string['backupwithusers'] = 'The site settings force user data into course backups. No backup without user data is possible.';
