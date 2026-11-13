@@ -57,3 +57,11 @@ Every function checks the capabilities of the token's user, as the Moodle interf
 ## License
 
 GNU GPL v3 or later. © 2026 Holger Sebastião
+
+## Site role for teachers (optional)
+
+Web service capabilities such as `moodle/webservice:createtoken` are checked in the system context, so the course
+role Teacher cannot grant them. Under *Site administration → Plugins → Local plugins → Course Files* you can choose a
+system role (e.g. "Web service user") that everybody with the teacher role in at least one course gets
+automatically. Saving the setting gives it to all current teachers; afterwards an event observer and a daily task
+keep it in step. The role is not removed when someone stops teaching.

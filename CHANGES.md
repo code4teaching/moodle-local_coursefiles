@@ -1,5 +1,12 @@
 # Changes
 
+## 0.5.0 (2026-11-13)
+
+- New setting *Site role for teachers*: everybody who has the teacher role in a course gets a chosen system role
+  (e.g. "Web service user" with `moodle/webservice:createtoken` and `webservice/mcp:use`), because such
+  capabilities are checked for the whole site and cannot come from a course role. An event observer assigns the
+  role when someone becomes a teacher; a daily task and saving the setting catch everybody else. Off by default.
+
 ## 0.4.0 (2026-11-13)
 
 - New `request_course`, `get_course_requests`, `approve_course_request` and `reject_course_request`: Moodle course
