@@ -55,10 +55,3 @@ function local_coursefiles_pluginfile($course, $cm, $context, $filearea, $args, 
     \core\session\manager::write_close();
     send_stored_file($file, 0, 0, true, $options);
 }
-
-/**
- * Called when the site role for teachers is changed in the settings: give it to all current teachers right away.
- */
-function local_coursefiles_sync_teacherrole(): void {
-    \local_coursefiles\local\teacherrole::sync();
-}

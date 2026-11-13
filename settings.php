@@ -54,7 +54,7 @@ if ($hassiteconfig) {
             0,
             $systemroles
         );
-        $siterole->set_updatedcallback('local_coursefiles_sync_teacherrole');
+        $siterole->set_updatedcallback([\local_coursefiles\local\teacherrole::class, 'sync']);
         $settings->add($siterole);
     }
 }

@@ -75,6 +75,32 @@ final class teacherrole_test extends \advanced_testcase {
     }
 
     /**
+     * Site admins have every capability anyway and do not get the role.
+     */
+    public function test_admin_skipped(): void {
+        $this->resetAfterTest();
+        $siterole = $this->setup_roles();
+        $course = $this->getDataGenerator()->create_course();
+        $this->getDataGenerator()->enrol_user(get_admin()->id, $course->id, 'editingteacher');
+        $this->assertFalse(user_has_role_assignment(get_admin()->id, $siterole, \context_system::instance()->id));
+    }
+
+    /**
+     * Saving the setting gives the role to all current teachers at once.
+     */
+    public function test_setting_callback(): void {
+        $this->resetAfterTest();
+        $gen = $this->getDataGenerator();
+        $course = $gen->create_course();
+        $teacher = $gen->create_and_enrol($course, 'editingteacher');
+        $siterole = $this->setup_roles();
+        $callback = [local\teacherrole::class, 'sync'];
+        $this->assertTrue(is_callable($callback));
+        $callback('local_coursefiles/siterole');
+        $this->assertTrue(user_has_role_assignment($teacher->id, $siterole, \context_system::instance()->id));
+    }
+
+    /**
      * Without a site role set nothing happens.
      */
     public function test_off(): void {

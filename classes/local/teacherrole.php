@@ -17,7 +17,7 @@
 namespace local_coursefiles\local;
 
 /**
- * Gives a site role (e.g. "Web service user") to everybody who teaches in a course.
+ * Gives a site role (e.g. "Web service user") to everybody who teaches in a course (site admins need no role).
  *
  * Capabilities such as moodle/webservice:createtoken are checked in the system context, so a course role
  * like Teacher cannot grant them. This keeps a system role in step with the teacher role in courses.
@@ -50,7 +50,7 @@ class teacherrole {
     public static function grant(int $userid): bool {
         global $DB;
         $roles = self::roles();
-        if (!$roles || isguestuser($userid)) {
+        if (!$roles || isguestuser($userid) || is_siteadmin($userid)) {
             return false;
         }
         $user = $DB->get_record('user', ['id' => $userid, 'deleted' => 0, 'suspended' => 0]);

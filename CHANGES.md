@@ -1,5 +1,10 @@
 # Changes
 
+## 0.5.1 (2026-11-13)
+
+- Saving the setting now really gives the role to all current teachers (the callback was not reachable).
+- Site admins do not get the role; they have every capability anyway.
+
 ## 0.5.0 (2026-11-13)
 
 - New setting *Site role for teachers*: everybody who has the teacher role in a course gets a chosen system role
