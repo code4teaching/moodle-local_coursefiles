@@ -1,5 +1,12 @@
 # Changes
 
+## 0.6.0 (2026-11-18)
+
+- New `get_self_enrolment` and `set_self_enrolment`: read and set the self enrolment of a course – on or off and the
+  enrolment key. If the course has no self enrolment method yet, it is added with the site defaults (role: student).
+  Moodle core only offers students a web service for self enrolment, none for teachers to configure it. Respects
+  *Use password policy* and *Require enrolment key* of the self enrolment plugin.
+
 ## 0.5.1 (2026-11-13)
 
 - Saving the setting now really gives the role to all current teachers (the callback was not reachable).

@@ -100,6 +100,18 @@ $functions = [
         'type'         => 'write',
         'capabilities' => 'moodle/site:approvecourse',
     ],
+    'local_coursefiles_get_self_enrolment' => [
+        'classname'    => 'local_coursefiles\\external\\get_self_enrolment',
+        'description'  => 'Reads the self enrolment of a course: on or off and the enrolment key.',
+        'type'         => 'read',
+        'capabilities' => 'enrol/self:config',
+    ],
+    'local_coursefiles_set_self_enrolment' => [
+        'classname'    => 'local_coursefiles\\external\\set_self_enrolment',
+        'description'  => 'Turns self enrolment of a course on or off and sets the enrolment key; adds the method if missing.',
+        'type'         => 'write',
+        'capabilities' => 'enrol/self:config, moodle/course:enrolconfig',
+    ],
 ];
 
 $services = [
