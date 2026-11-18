@@ -68,8 +68,10 @@ final class selfenrol_test extends \advanced_testcase {
         $this->assertSame('Neu', $DB->get_field('enrol', 'password', ['id' => $instance->id]));
         $this->assertEquals(1, $DB->count_records('enrol', ['courseid' => $course->id, 'enrol' => 'self']));
 
-        $result = external_api::clean_returnvalue(get_self_enrolment::execute_returns(),
-            get_self_enrolment::execute($course->id));
+        $result = external_api::clean_returnvalue(
+            get_self_enrolment::execute_returns(),
+            get_self_enrolment::execute($course->id)
+        );
         $this->assertSame('Neu', $result['password']);
         $this->assertSame(0, $result['enabled']);
     }

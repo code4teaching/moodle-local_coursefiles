@@ -53,8 +53,10 @@ class set_self_enrolment extends external_api {
      * @return array
      */
     public static function execute(int $courseid, int $enabled, string $password = ''): array {
-        $params = self::validate_parameters(self::execute_parameters(),
-            ['courseid' => $courseid, 'enabled' => $enabled, 'password' => $password]);
+        $params = self::validate_parameters(
+            self::execute_parameters(),
+            ['courseid' => $courseid, 'enabled' => $enabled, 'password' => $password]
+        );
         $course = get_course($params['courseid']);
         $context = \context_course::instance($course->id);
         self::validate_context($context);
