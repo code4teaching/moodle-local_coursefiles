@@ -75,6 +75,18 @@ $functions = [
         'type'         => 'write',
         'capabilities' => 'moodle/course:visibility',
     ],
+    'local_coursefiles_create_assign' => [
+        'classname'    => 'local_coursefiles\external\create_assign',
+        'description'  => 'Creates an assignment (file submissions, due date, task with attached files, feedback files on).',
+        'type'         => 'write',
+        'capabilities' => 'moodle/course:manageactivities, mod/assign:addinstance',
+    ],
+    'local_coursefiles_set_assign_duedate' => [
+        'classname'    => 'local_coursefiles\external\set_assign_duedate',
+        'description'  => 'Changes the due date of an assignment.',
+        'type'         => 'write',
+        'capabilities' => 'moodle/course:manageactivities',
+    ],
     'local_coursefiles_set_feedback_files' => [
         'classname'    => 'local_coursefiles\external\set_feedback_files',
         'description'  => 'Replaces the feedback files of one student in an assignment (the grade stays).',

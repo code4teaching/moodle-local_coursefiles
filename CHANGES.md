@@ -1,5 +1,12 @@
 # Changes
 
+## 0.11.0 (2026-11-19)
+
+- New `create_assign`: creates an assignment in a section – file submissions, a due date, the task as text and
+  attached files (e.g. the worksheet), feedback comments and feedback files switched on. Hidden by default.
+- New `set_assign_duedate`: changes the due date of an assignment (calendar event included); a cut-off date before the
+  new due date is removed.
+
 ## 0.10.0 (2026-11-19)
 
 - New `set_feedback_files`: gives one student feedback files in an assignment (e.g. the corrected, annotated
