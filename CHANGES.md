@@ -1,5 +1,10 @@
 # Changes
 
+## 0.9.0 (2026-11-19)
+
+- New `set_course_visibility`: shows or hides a whole course, checking `moodle/course:visibility` – teachers can
+  publish their own course without getting `core_course_update_courses`, which can change much more.
+
 ## 0.8.0 (2026-11-19)
 
 - New `set_availability`: plans when an activity or resource becomes available – a date restriction "from" at the top

@@ -22,6 +22,7 @@ Moodle core cannot create file resources or folders through web services, and `c
 | `local_coursefiles_create_folder` | Creates a folder with several files in a course section. |
 | `local_coursefiles_update_files` | Replaces the file of a resource or all files of a folder. The activity keeps its ID, place, settings and completion. |
 | `local_coursefiles_set_visibility` | Shows or hides any activity or resource. |
+| `local_coursefiles_set_course_visibility` | Shows or hides a whole course (only this setting, `moodle/course:visibility`). |
 | `local_coursefiles_set_availability` | Plans when an activity becomes available (date restriction "from", other restrictions stay). |
 | `local_coursefiles_create_section` | Creates a section at the end or at a given position. |
 | `local_coursefiles_update_section` | Changes name, summary or visibility of a section. |

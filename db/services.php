@@ -69,6 +69,12 @@ $functions = [
         'type'         => 'write',
         'capabilities' => 'moodle/course:activityvisibility',
     ],
+    'local_coursefiles_set_course_visibility' => [
+        'classname'    => 'local_coursefiles\external\set_course_visibility',
+        'description'  => 'Shows or hides a whole course for students (only this setting).',
+        'type'         => 'write',
+        'capabilities' => 'moodle/course:visibility',
+    ],
     'local_coursefiles_set_availability' => [
         'classname'    => 'local_coursefiles\external\set_availability',
         'description'  => 'Plans when an activity becomes available: a date restriction "from" (or none) and visible.',
