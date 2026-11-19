@@ -4,6 +4,15 @@ Web service functions that let external tools – for example a teacher's own da
 through the [MCP web service plugin](https://github.com/onbirdev/moodle-webservice_mcp) – put files into a course
 and show or hide activities.
 
+## Why this plugin exists
+
+Course Files was developed for **[VisuDesk](https://visucode.de/visudesk/)**, a free Mac app for teachers. We wanted
+teachers to manage their Moodle courses the way they manage their files: drag a worksheet from a folder into a section,
+replace it with a new version, make it visible after the lesson – without opening Moodle in the browser.
+
+The functions are not tied to VisuDesk. Any web service client can use them, for example a school's own tools or an AI
+assistant connected through the MCP web service. Every call checks the same capabilities as the Moodle interface.
+
 Moodle core cannot create file resources or folders through web services, and `core_course_edit_module`
 (show/hide) and section editing are only available to the Moodle interface itself. This plugin adds:
 
