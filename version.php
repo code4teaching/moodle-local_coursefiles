@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_coursefiles';
-$plugin->version   = 2026111906;
+$plugin->version   = 2026112000;
 $plugin->requires  = 2025041400; // Moodle 5.0.
 $plugin->maturity  = MATURITY_ALPHA;
-$plugin->release   = '0.12.0';
+$plugin->release   = '0.13.0';
