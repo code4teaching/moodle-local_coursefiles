@@ -36,7 +36,7 @@ final class course_visibility_test extends \advanced_testcase {
         $this->setUser($teacher);
 
         $this->assertSame(1, set_course_visibility::execute($course->id, 1)['visible']);
-        $this->assertSame('1', (string)get_course($course->id)->visible);
+        $this->assertSame('1', (string)$GLOBALS['DB']->get_field('course', 'visible', ['id' => $course->id]));
         $this->assertSame(0, set_course_visibility::execute($course->id, 0)['visible']);
     }
 

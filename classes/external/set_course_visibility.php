@@ -50,7 +50,7 @@ class set_course_visibility extends external_api {
      * @return array
      */
     public static function execute(int $courseid, int $visible): array {
-        global $CFG;
+        global $CFG, $DB;
         require_once($CFG->dirroot . '/course/lib.php');
 
         $params = self::validate_parameters(self::execute_parameters(), ['courseid' => $courseid, 'visible' => $visible]);
@@ -63,7 +63,8 @@ class set_course_visibility extends external_api {
         require_capability('moodle/course:visibility', $context);
 
         course_change_visibility($course->id, (bool)$params['visible']);
-        return ['courseid' => (int)$course->id, 'visible' => (int)get_course($course->id)->visible];
+        // Not get_course(): it may return the cached $COURSE from before the change.
+        return ['courseid' => (int)$course->id, 'visible' => (int)$DB->get_field('course', 'visible', ['id' => $course->id])];
     }
 
     /**

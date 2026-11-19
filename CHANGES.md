@@ -1,5 +1,9 @@
 # Changes
 
+## 0.9.1 (2026-11-19)
+
+- `set_course_visibility` returns the new visibility from the database (not the cached course).
+
 ## 0.9.0 (2026-11-19)
 
 - New `set_course_visibility`: shows or hides a whole course, checking `moodle/course:visibility` – teachers can
