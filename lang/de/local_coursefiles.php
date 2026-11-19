@@ -24,6 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['availabilitydisabled'] = 'Voraussetzungen sind auf dieser Website ausgeschaltet (Website-Administration → Erweiterte Funktionen → Voraussetzungen aktivieren). Ein Freigabedatum hätte deshalb keine Wirkung.';
 $string['connectbutton'] = 'Mit VisuDesk verbinden';
 $string['connectinvalid'] = 'Dieser Link zum Verbinden einer App ist ungültig. Bitte in der App noch einmal auf „Mit Moodle verbinden“ klicken.';
 $string['connectnoservice'] = 'Der Webservice {$a} steht zum Verbinden von Apps nicht zur Verfügung. Bitte wende dich an die Moodle-Administration.';

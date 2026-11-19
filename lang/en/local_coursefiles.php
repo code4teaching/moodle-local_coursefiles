@@ -24,6 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['availabilitydisabled'] = 'Restrict access is turned off on this site (Site administration → Advanced features → Enable restricted access), so a release date would have no effect.';
 $string['backupfailed'] = 'The backup could not be created.';
 $string['backupwithusers'] = 'The site settings force user data into course backups. No backup without user data is possible.';
 $string['connectbutton'] = 'Connect to VisuDesk';

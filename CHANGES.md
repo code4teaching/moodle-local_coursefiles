@@ -1,5 +1,12 @@
 # Changes
 
+## 0.8.0 (2026-11-19)
+
+- New `set_availability`: plans when an activity or resource becomes available – a date restriction "from" at the top
+  level (replacing an earlier one, other restrictions stay), and the activity is made visible so Moodle releases it by
+  itself. `hidebefore` (default 1) hides it completely before the date. `timefrom=0` removes the date again. Refused
+  when restricted access is turned off on the site.
+
 ## 0.7.0 (2026-11-19)
 
 - New page `local/coursefiles/connect.php`: connects VisuDesk without copying a key. The teacher signs in to Moodle

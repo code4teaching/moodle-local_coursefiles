@@ -69,6 +69,12 @@ $functions = [
         'type'         => 'write',
         'capabilities' => 'moodle/course:activityvisibility',
     ],
+    'local_coursefiles_set_availability' => [
+        'classname'    => 'local_coursefiles\external\set_availability',
+        'description'  => 'Plans when an activity becomes available: a date restriction "from" (or none) and visible.',
+        'type'         => 'write',
+        'capabilities' => 'moodle/course:manageactivities, moodle/course:activityvisibility',
+    ],
     'local_coursefiles_backup_course' => [
         'classname'    => 'local_coursefiles\\external\\backup_course',
         'description'  => 'Creates a Moodle backup (.mbz) of a course without user data and returns a download address. ' .
