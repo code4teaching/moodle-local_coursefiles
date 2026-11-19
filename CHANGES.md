@@ -1,5 +1,11 @@
 # Changes
 
+## 0.10.0 (2026-11-19)
+
+- New `set_feedback_files`: gives one student feedback files in an assignment (e.g. the corrected, annotated
+  submission), replacing earlier feedback files of this student. Needs `mod/assign:grade`; the feedback type
+  "Feedback files" must be enabled in the assignment. The grade itself is not changed.
+
 ## 0.9.1 (2026-11-19)
 
 - `set_course_visibility` returns the new visibility from the database (not the cached course).

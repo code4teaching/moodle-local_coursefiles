@@ -75,6 +75,12 @@ $functions = [
         'type'         => 'write',
         'capabilities' => 'moodle/course:visibility',
     ],
+    'local_coursefiles_set_feedback_files' => [
+        'classname'    => 'local_coursefiles\external\set_feedback_files',
+        'description'  => 'Replaces the feedback files of one student in an assignment (the grade stays).',
+        'type'         => 'write',
+        'capabilities' => 'mod/assign:grade',
+    ],
     'local_coursefiles_set_availability' => [
         'classname'    => 'local_coursefiles\external\set_availability',
         'description'  => 'Plans when an activity becomes available: a date restriction "from" (or none) and visible.',

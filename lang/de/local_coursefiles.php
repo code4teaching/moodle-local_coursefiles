@@ -31,3 +31,5 @@ $string['connectnoservice'] = 'Der Webservice {$a} steht zum Verbinden von Apps 
 $string['connectnotallowed'] = 'Für den Webservice {$a} kannst du noch keinen Schlüssel bekommen. Bitte wende dich an die Moodle-Administration.';
 $string['connectquestion'] = '<p>VisuDesk auf diesem Computer möchte mit deinem Moodle-Konto <strong>{$a->name}</strong> arbeiten (Webservice „{$a->service}“).</p><p>VisuDesk kann dann in deinen Kursen das tun, was du in Moodle tun kannst: Dateien hochladen, Tests anlegen und Abgaben ansehen. Der Schlüssel geht nur an VisuDesk auf diesem Computer und wird dort im Schlüsselbund gespeichert.</p><p>Entfernen kannst du ihn jederzeit unter Einstellungen → Sicherheitsschlüssel.</p>';
 $string['connecttitle'] = 'VisuDesk verbinden';
+$string['feedbackfilesdisabled'] = 'In dieser Aufgabe sind Feedbackdateien ausgeschaltet. In den Einstellungen der Aufgabe unter Feedback-Typen „Feedbackdateien“ einschalten.';
+$string['notparticipant'] = 'Diese Person nimmt nicht an der Aufgabe teil.';
