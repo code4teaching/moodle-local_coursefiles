@@ -1,5 +1,13 @@
 # Changes
 
+## 0.7.0 (2026-11-19)
+
+- New page `local/coursefiles/connect.php`: connects VisuDesk without copying a key. The teacher signs in to Moodle
+  as usual (single sign-on too), confirms, and Moodle hands the token for the service VisuDesk to the app on the same
+  computer – like the launch of the Moodle mobile app. The app sends a random passport and accepts only a token that
+  comes back with it; the token only goes to a loopback address (127.0.0.1, localhost) on the path `/verbunden`.
+  Moodle checks as on the security keys page whether the user may create a token for the service. German strings.
+
 ## 0.6.0 (2026-11-18)
 
 - New `get_self_enrolment` and `set_self_enrolment`: read and set the self enrolment of a course – on or off and the

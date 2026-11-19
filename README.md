@@ -58,6 +58,15 @@ Every function checks the capabilities of the token's user, as the Moodle interf
 - `get_self_enrolment`, `set_self_enrolment`: `enrol/self:config` (teachers have it by default); adding the method also
   needs `moodle/course:enrolconfig`. The self enrolment plugin must be enabled on the site
 
+## Connecting VisuDesk (no key to copy)
+
+`local/coursefiles/connect.php?passport=…&return=http://127.0.0.1:PORT/verbunden` lets VisuDesk get its key the way
+the Moodle mobile app does: the teacher signs in to Moodle (single sign-on works), confirms, and Moodle sends the token
+of the web service *VisuDesk* (short name `visudesk`) back to the app on the same computer. The token only goes to a
+loopback address; the app accepts it only together with the random passport it sent. Moodle checks, as on the
+*Security keys* page, that the user may create tokens (`moodle/webservice:createtoken`, e.g. through the site role
+for teachers below) and, for a service with authorised users only, that the user is one of them.
+
 ## License
 
 GNU GPL v3 or later. © 2026 Holger Sebastião

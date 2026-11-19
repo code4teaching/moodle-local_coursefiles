@@ -26,6 +26,12 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['backupfailed'] = 'The backup could not be created.';
 $string['backupwithusers'] = 'The site settings force user data into course backups. No backup without user data is possible.';
+$string['connectbutton'] = 'Connect to VisuDesk';
+$string['connectinvalid'] = 'This link to connect an app is not valid. Start again in the app with “Connect to Moodle”.';
+$string['connectnoservice'] = 'The web service {$a} is not available for connecting apps. Please contact the Moodle administration.';
+$string['connectnotallowed'] = 'You cannot get a key for the web service {$a} yet. Please contact the Moodle administration.';
+$string['connectquestion'] = '<p>VisuDesk on this computer wants to work with your Moodle account <strong>{$a->name}</strong> (web service “{$a->service}”).</p><p>VisuDesk can then do in your courses what you can do in Moodle: upload files, create quizzes and look at submissions. The key goes only to VisuDesk on this computer and is stored in its keychain.</p><p>You can remove the key at any time under Preferences → Security keys.</p>';
+$string['connecttitle'] = 'Connect VisuDesk';
 $string['filetoobig'] = 'The file {$a->filename} ({$a->size}) is larger than the upload limit of this course ({$a->max}).';
 $string['invalidcontent'] = 'The content of {$a} is not valid base64.';
 $string['invalidfilename'] = 'Invalid or duplicate file name: {$a}';
