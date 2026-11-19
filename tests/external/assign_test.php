@@ -175,7 +175,7 @@ final class assign_test extends \advanced_testcase {
         $scale = $gen->create_scale(['name' => 'Noten 1–6', 'scale' => '6, 5, 4, 3, 2, 1', 'courseid' => 0]);
         $this->setUser($teacher);
 
-        $result = create_assign::execute($course->id, 0, 'Projekt', '', [], 0, 1, 0, 'Noten 1–6', 1);
+        $result = create_assign::execute($course->id, 0, 'Aufgabe 1', '', [], 0, 1, 0, 'Noten 1–6', 1);
         $record = $DB->get_record('assign', ['id' => $result['assignid']], '*', MUST_EXIST);
         $this->assertSame(-(int)$scale->id, (int)$record->grade);
         $this->assertSame(1, (int)$record->markingworkflow);

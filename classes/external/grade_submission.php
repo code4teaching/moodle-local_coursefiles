@@ -138,12 +138,14 @@ class grade_submission extends external_api {
             $flags->workflowstate = $state;
             $assign->update_user_flags($flags);
         }
-        // Saves the grade and passes it to the gradebook (with marking workflow only once released).
+        // Saves the grade and passes it to the gradebook (with marking workflow only once released). update_grade()
+        // sets ->grade of the object to -1 when the grade is not released yet, so the saved value is kept first.
+        $saved = $record->grade !== null ? (float)$record->grade : -1.0;
         $assign->update_grade($record);
 
         $flags = $assign->get_user_flags($params['userid'], false);
         return [
-            'grade' => $record->grade !== null ? (float)$record->grade : -1.0,
+            'grade' => $saved,
             'workflowstate' => $flags && $flags->workflowstate ? $flags->workflowstate : '',
         ];
     }
