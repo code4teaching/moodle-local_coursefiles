@@ -138,7 +138,7 @@ final class assign_test extends \advanced_testcase {
         $gen = $this->getDataGenerator();
         $course = $gen->create_course();
         $this->setUser($gen->create_and_enrol($course, 'editingteacher'));
-        $result = create_assign::execute($course->id, 0, 'x');
+        $result = create_assign::execute($course->id, 0, 'x', '', [], 0, 1);
         $this->setUser($gen->create_and_enrol($course, 'student'));
 
         $this->expectException(\required_capability_exception::class);
