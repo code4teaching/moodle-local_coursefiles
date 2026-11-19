@@ -57,8 +57,10 @@ class set_availability extends external_api {
         global $CFG, $DB;
         require_once($CFG->dirroot . '/course/lib.php');
 
-        $params = self::validate_parameters(self::execute_parameters(),
-            ['cmid' => $cmid, 'timefrom' => $timefrom, 'hidebefore' => $hidebefore]);
+        $params = self::validate_parameters(
+            self::execute_parameters(),
+            ['cmid' => $cmid, 'timefrom' => $timefrom, 'hidebefore' => $hidebefore]
+        );
         $cm = get_coursemodule_from_id('', $params['cmid'], 0, false, MUST_EXIST);
         $context = \context_module::instance($cm->id);
         self::validate_context($context);
