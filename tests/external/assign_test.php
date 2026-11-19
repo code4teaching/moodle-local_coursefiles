@@ -26,6 +26,7 @@ namespace local_coursefiles\external;
  */
 #[\PHPUnit\Framework\Attributes\CoversClass(create_assign::class)]
 #[\PHPUnit\Framework\Attributes\CoversClass(set_assign_duedate::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(update_assign::class)]
 final class assign_test extends \advanced_testcase {
     /**
      * A teacher creates a hidden assignment with a worksheet and a due date, then moves the due date.
@@ -77,6 +78,71 @@ final class assign_test extends \advanced_testcase {
         $this->assertSame($later, set_assign_duedate::execute($result['cmid'], $later)['duedate']);
         $this->assertSame($later, (int)$DB->get_field('assign', 'duedate', ['id' => $result['assignid']]));
         $this->assertSame(0, set_assign_duedate::execute($result['cmid'], 0)['duedate']);
+    }
+
+    /**
+     * A teacher corrects the description, renames, swaps an attached file and moves the due date; nothing else changes.
+     */
+    public function test_update_assign(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $gen = $this->getDataGenerator();
+        $course = $gen->create_course(['numsections' => 1]);
+        $this->setUser($gen->create_and_enrol($course, 'editingteacher'));
+
+        $due = time() + DAYSECS;
+        $result = create_assign::execute(
+            $course->id,
+            1,
+            'Recherche',
+            '<p>Recherchiere drei Beispiel.</p>',
+            [
+                ['filename' => 'AB.pdf', 'content' => base64_encode('%PDF-1.4')],
+                ['filename' => 'Hinweise.pdf', 'content' => base64_encode('%PDF-1.4')],
+            ],
+            $due,
+            1
+        );
+
+        // Only the description.
+        $r = update_assign::execute($result['cmid'], '', true, '<p>Recherchiere drei Beispiele.</p>');
+        $record = $DB->get_record('assign', ['id' => $result['assignid']], '*', MUST_EXIST);
+        $this->assertSame('<p>Recherchiere drei Beispiele.</p>', $record->intro);
+        $this->assertSame('Recherche', $record->name);
+        $this->assertSame($due, (int)$record->duedate);
+        $this->assertSame(['AB.pdf', 'Hinweise.pdf'], $r['files']);
+
+        // Name, files (keep AB.pdf, drop Hinweise.pdf, add Quellen.pdf) and due date.
+        $later = $due + DAYSECS;
+        $r = update_assign::execute(
+            $result['cmid'],
+            'Recherche Datenschutz',
+            false,
+            '',
+            true,
+            ['AB.pdf'],
+            [['filename' => 'Quellen.pdf', 'content' => base64_encode('%PDF-1.4')]],
+            $later
+        );
+        $this->assertSame('Recherche Datenschutz', $r['name']);
+        $this->assertSame(['AB.pdf', 'Quellen.pdf'], $r['files']);
+        $this->assertSame($later, (int)$DB->get_field('assign', 'duedate', ['id' => $result['assignid']]));
+        $this->assertSame('<p>Recherchiere drei Beispiele.</p>', $DB->get_field('assign', 'intro', ['id' => $result['assignid']]));
+    }
+
+    /**
+     * Students cannot change assignments.
+     */
+    public function test_student_cannot_update(): void {
+        $this->resetAfterTest();
+        $gen = $this->getDataGenerator();
+        $course = $gen->create_course();
+        $this->setUser($gen->create_and_enrol($course, 'editingteacher'));
+        $result = create_assign::execute($course->id, 0, 'x');
+        $this->setUser($gen->create_and_enrol($course, 'student'));
+
+        $this->expectException(\required_capability_exception::class);
+        update_assign::execute($result['cmid'], 'y');
     }
 
     /**

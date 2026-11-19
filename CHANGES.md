@@ -1,5 +1,10 @@
 # Changes
 
+## 0.12.0 (2026-11-19)
+
+- New `update_assign`: changes an existing assignment – name, task description, attached files (keep some, add or
+  replace others) and due date. Only what is passed changes; submissions, grades and all other settings stay.
+
 ## 0.11.0 (2026-11-19)
 
 - New `create_assign`: creates an assignment in a section – file submissions, a due date, the task as text and

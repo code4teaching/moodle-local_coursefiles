@@ -87,6 +87,12 @@ $functions = [
         'type'         => 'write',
         'capabilities' => 'moodle/course:manageactivities',
     ],
+    'local_coursefiles_update_assign' => [
+        'classname'    => 'local_coursefiles\external\update_assign',
+        'description'  => 'Changes an assignment: name, task description, attached files and due date (only what is passed).',
+        'type'         => 'write',
+        'capabilities' => 'moodle/course:manageactivities',
+    ],
     'local_coursefiles_set_feedback_files' => [
         'classname'    => 'local_coursefiles\external\set_feedback_files',
         'description'  => 'Replaces the feedback files of one student in an assignment (the grade stays).',
