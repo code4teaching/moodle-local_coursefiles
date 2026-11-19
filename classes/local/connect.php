@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-
 namespace local_coursefiles\local;
 
 /**
@@ -29,10 +28,10 @@ namespace local_coursefiles\local;
  */
 class connect {
     /** Services an app may connect to (short names). */
-    const SERVICES = ['visudesk'];
+    public const SERVICES = ['visudesk'];
 
     /** Path the app listens on. */
-    const RETURNPATH = '/verbunden';
+    public const RETURNPATH = '/verbunden';
 
     /**
      * Checks the address the token goes to: only the app on this computer.
@@ -101,6 +100,7 @@ class connect {
      */
     public static function callback(string $return, string $passport, string $token): string {
         global $CFG;
-        return $return . '?' . http_build_query(['passport' => $passport, 'site' => $CFG->wwwroot, 'token' => $token]);
+        // Moodle sets arg_separator.output to &amp; – the browser needs a plain &.
+        return $return . '?' . http_build_query(['passport' => $passport, 'site' => $CFG->wwwroot, 'token' => $token], '', '&');
     }
 }

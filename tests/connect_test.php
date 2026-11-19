@@ -50,7 +50,7 @@ final class connect_test extends \advanced_testcase {
     public function test_valid_return(): void {
         $this->assertTrue(connect::valid_return('http://127.0.0.1:8765/verbunden'));
         $this->assertTrue(connect::valid_return('http://localhost:8765/verbunden'));
-        foreach ([
+        $invalid = [
             'https://127.0.0.1:8765/verbunden',
             'http://127.0.0.1/verbunden',
             'http://127.0.0.1:80/verbunden',
@@ -61,7 +61,8 @@ final class connect_test extends \advanced_testcase {
             'http://127.0.0.1:8765/other',
             'javascript:alert(1)',
             '',
-        ] as $url) {
+        ];
+        foreach ($invalid as $url) {
             $this->assertFalse(connect::valid_return($url), $url);
         }
     }
