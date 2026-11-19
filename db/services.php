@@ -93,6 +93,25 @@ $functions = [
         'type'         => 'write',
         'capabilities' => 'moodle/course:manageactivities',
     ],
+    'local_coursefiles_get_assign_grading' => [
+        'classname'    => 'local_coursefiles\external\get_assign_grading',
+        'description'  => 'Grading overview of an assignment: grade type, scale items, marking workflow and per participant '
+            . 'the grade, workflow state, feedback comment and number of feedback files.',
+        'type'         => 'read',
+        'capabilities' => 'mod/assign:grade',
+    ],
+    'local_coursefiles_grade_submission' => [
+        'classname'    => 'local_coursefiles\external\grade_submission',
+        'description'  => 'Grades one participant: grade, feedback comment and marking workflow state.',
+        'type'         => 'write',
+        'capabilities' => 'mod/assign:grade',
+    ],
+    'local_coursefiles_release_grades' => [
+        'classname'    => 'local_coursefiles\external\release_grades',
+        'description'  => 'Releases grades of an assignment with marking workflow, so students see them.',
+        'type'         => 'write',
+        'capabilities' => 'mod/assign:grade, mod/assign:releasegrades',
+    ],
     'local_coursefiles_set_feedback_files' => [
         'classname'    => 'local_coursefiles\external\set_feedback_files',
         'description'  => 'Replaces the feedback files of one student in an assignment (the grade stays).',
@@ -106,44 +125,44 @@ $functions = [
         'capabilities' => 'moodle/course:manageactivities, moodle/course:activityvisibility',
     ],
     'local_coursefiles_backup_course' => [
-        'classname'    => 'local_coursefiles\\external\\backup_course',
+        'classname'    => 'local_coursefiles\external\backup_course',
         'description'  => 'Creates a Moodle backup (.mbz) of a course without user data and returns a download address. ' .
             'Refuses if the site forces user data into backups.',
         'type'         => 'write',
         'capabilities' => 'moodle/backup:backupcourse, moodle/backup:downloadfile',
     ],
     'local_coursefiles_request_course' => [
-        'classname'    => 'local_coursefiles\\external\\request_course',
+        'classname'    => 'local_coursefiles\external\request_course',
         'description'  => 'Asks for a new course (Moodle course request). Needs course requests to be enabled on the site.',
         'type'         => 'write',
         'capabilities' => 'moodle/course:request',
     ],
     'local_coursefiles_get_course_requests' => [
-        'classname'    => 'local_coursefiles\\external\\get_course_requests',
+        'classname'    => 'local_coursefiles\external\get_course_requests',
         'description'  => 'Lists pending course requests: the caller\'s own, or all of them for approvers (all=1).',
         'type'         => 'read',
     ],
     'local_coursefiles_approve_course_request' => [
-        'classname'    => 'local_coursefiles\\external\\approve_course_request',
+        'classname'    => 'local_coursefiles\external\approve_course_request',
         'description'  => 'Approves a course request, optionally with a corrected name and another category. ' .
             'Moodle creates the course, enrols the requester as teacher and notifies them.',
         'type'         => 'write',
         'capabilities' => 'moodle/site:approvecourse',
     ],
     'local_coursefiles_reject_course_request' => [
-        'classname'    => 'local_coursefiles\\external\\reject_course_request',
+        'classname'    => 'local_coursefiles\external\reject_course_request',
         'description'  => 'Rejects a course request; the reason is sent to the requester.',
         'type'         => 'write',
         'capabilities' => 'moodle/site:approvecourse',
     ],
     'local_coursefiles_get_self_enrolment' => [
-        'classname'    => 'local_coursefiles\\external\\get_self_enrolment',
+        'classname'    => 'local_coursefiles\external\get_self_enrolment',
         'description'  => 'Reads the self enrolment of a course: on or off and the enrolment key.',
         'type'         => 'read',
         'capabilities' => 'enrol/self:config',
     ],
     'local_coursefiles_set_self_enrolment' => [
-        'classname'    => 'local_coursefiles\\external\\set_self_enrolment',
+        'classname'    => 'local_coursefiles\external\set_self_enrolment',
         'description'  => 'Turns self enrolment of a course on or off and sets the enrolment key; adds the method if missing.',
         'type'         => 'write',
         'capabilities' => 'enrol/self:config, moodle/course:enrolconfig',

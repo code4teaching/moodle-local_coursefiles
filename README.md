@@ -24,9 +24,12 @@ Moodle core cannot create file resources or folders through web services, and `c
 | `local_coursefiles_set_visibility` | Shows or hides any activity or resource. |
 | `local_coursefiles_set_course_visibility` | Shows or hides a whole course (only this setting, `moodle/course:visibility`). |
 | `local_coursefiles_set_availability` | Plans when an activity becomes available (date restriction "from", other restrictions stay). |
-| `local_coursefiles_create_assign` | Creates an assignment with file submissions, due date and attached task files; feedback files on. |
+| `local_coursefiles_create_assign` | Creates an assignment with file submissions, due date and attached task files; feedback files on; points, a scale or no grade; optional marking workflow. |
 | `local_coursefiles_set_assign_duedate` | Changes the due date of an assignment. |
-| `local_coursefiles_update_assign` | Changes an assignment: name, task description, attached files and due date (only what is passed). |
+| `local_coursefiles_update_assign` | Changes an assignment: name, task description, attached files, due date, grade type and marking workflow (only what is passed). |
+| `local_coursefiles_get_assign_grading` | Grading overview of an assignment: grade type and scale items, marking workflow, per participant grade, state, feedback (`mod/assign:grade`). |
+| `local_coursefiles_grade_submission` | Grades one participant: grade, feedback comment, marking workflow state (`mod/assign:grade`). |
+| `local_coursefiles_release_grades` | Releases grades of an assignment with marking workflow (`mod/assign:releasegrades`). |
 | `local_coursefiles_set_feedback_files` | Gives one student feedback files in an assignment, e.g. the corrected submission (`mod/assign:grade`; the grade stays). |
 | `local_coursefiles_create_section` | Creates a section at the end or at a given position. |
 | `local_coursefiles_update_section` | Changes name, summary or visibility of a section. |

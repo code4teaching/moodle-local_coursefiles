@@ -27,6 +27,10 @@ namespace local_coursefiles\external;
 #[\PHPUnit\Framework\Attributes\CoversClass(create_assign::class)]
 #[\PHPUnit\Framework\Attributes\CoversClass(set_assign_duedate::class)]
 #[\PHPUnit\Framework\Attributes\CoversClass(update_assign::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(get_assign_grading::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(grade_submission::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(release_grades::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_coursefiles\local\grading::class)]
 final class assign_test extends \advanced_testcase {
     /**
      * A teacher creates a hidden assignment with a worksheet and a due date, then moves the due date.
@@ -155,5 +159,117 @@ final class assign_test extends \advanced_testcase {
 
         $this->expectException(\required_capability_exception::class);
         create_assign::execute($course->id, 0, 'x');
+    }
+
+    /**
+     * Grading with a site scale and marking workflow: the grade reaches the gradebook only once it is released.
+     */
+    public function test_grade_with_scale_and_release(): void {
+        global $CFG, $DB;
+        require_once($CFG->libdir . '/gradelib.php');
+        $this->resetAfterTest();
+        $gen = $this->getDataGenerator();
+        $course = $gen->create_course();
+        $teacher = $gen->create_and_enrol($course, 'editingteacher');
+        $student = $gen->create_and_enrol($course, 'student');
+        $scale = $gen->create_scale(['name' => 'Noten 1–6', 'scale' => '6, 5, 4, 3, 2, 1', 'courseid' => 0]);
+        $this->setUser($teacher);
+
+        $result = create_assign::execute($course->id, 0, 'Projekt', '', [], 0, 1, 0, 'Noten 1–6', 1);
+        $record = $DB->get_record('assign', ['id' => $result['assignid']], '*', MUST_EXIST);
+        $this->assertSame(-(int)$scale->id, (int)$record->grade);
+        $this->assertSame(1, (int)$record->markingworkflow);
+
+        $info = get_assign_grading::execute($result['cmid']);
+        $info = \core_external\external_api::clean_returnvalue(get_assign_grading::execute_returns(), $info);
+        $this->assertSame('scale', $info['type']);
+        $this->assertSame(['6', '5', '4', '3', '2', '1'], $info['scaleitems']);
+        $this->assertSame([(int)$student->id], array_column($info['users'], 'userid'));
+        $this->assertEquals(-1, $info['users'][0]['grade']);
+
+        // Item 5 of the scale is "2"; ready for release, not yet visible.
+        $r = grade_submission::execute($result['cmid'], $student->id, true, 5, true, '<p>Gut gemacht.</p>', 'readyforrelease');
+        $this->assertEquals(5, $r['grade']);
+        $this->assertSame('readyforrelease', $r['workflowstate']);
+        $gradebook = grade_get_grades($course->id, 'mod', 'assign', $result['assignid'], $student->id);
+        $this->assertNull($gradebook->items[0]->grades[$student->id]->grade);
+
+        $this->assertSame([(int)$student->id], release_grades::execute($result['cmid'])['released']);
+        $gradebook = grade_get_grades($course->id, 'mod', 'assign', $result['assignid'], $student->id);
+        $this->assertEquals(5, $gradebook->items[0]->grades[$student->id]->grade);
+
+        $info = get_assign_grading::execute($result['cmid']);
+        $this->assertSame('released', $info['users'][0]['workflowstate']);
+        $this->assertSame('<p>Gut gemacht.</p>', $info['users'][0]['feedback']);
+
+        // Not an item of the scale.
+        try {
+            grade_submission::execute($result['cmid'], $student->id, true, 7);
+            $this->fail('A grade outside the scale was accepted.');
+        } catch (\moodle_exception $e) {
+            $this->assertSame('gradenotinscale', $e->errorcode);
+        }
+        // Somebody has a grade, so the grade type stays.
+        $this->expectException(\moodle_exception::class);
+        update_assign::execute($result['cmid'], '', false, '', false, [], [], -1, true, 15);
+    }
+
+    /**
+     * Points up to 15, no workflow: grades go to the gradebook at once; the type can change while nobody has a grade.
+     */
+    public function test_points_and_no_grade(): void {
+        global $CFG, $DB;
+        require_once($CFG->libdir . '/gradelib.php');
+        $this->resetAfterTest();
+        $gen = $this->getDataGenerator();
+        $course = $gen->create_course();
+        $teacher = $gen->create_and_enrol($course, 'editingteacher');
+        $student = $gen->create_and_enrol($course, 'student');
+        $this->setUser($teacher);
+
+        $result = create_assign::execute($course->id, 0, 'Arbeitsblatt', '', [], 0, 1, 15);
+        $this->assertSame(15, (int)$DB->get_field('assign', 'grade', ['id' => $result['assignid']]));
+        try {
+            grade_submission::execute($result['cmid'], $student->id, true, 16);
+            $this->fail('More than the maximum was accepted.');
+        } catch (\moodle_exception $e) {
+            $this->assertSame('gradetoohigh', $e->errorcode);
+        }
+
+        // Nobody has a grade yet: switch to "no grade" and on with the workflow.
+        $r = update_assign::execute($result['cmid'], '', false, '', false, [], [], -1, true, 0, '', 1);
+        $this->assertSame(0, $r['grade']);
+        $this->assertSame(1, $r['markingworkflow']);
+        try {
+            grade_submission::execute($result['cmid'], $student->id, true, 3);
+            $this->fail('A grade was accepted for an ungraded assignment.');
+        } catch (\moodle_exception $e) {
+            $this->assertSame('nogradetype', $e->errorcode);
+        }
+        // Feedback alone works.
+        $r = grade_submission::execute($result['cmid'], $student->id, false, -1, true, '<p>Danke!</p>');
+        $this->assertEquals(-1, $r['grade']);
+        $this->assertSame('<p>Danke!</p>', get_assign_grading::execute($result['cmid'])['users'][0]['feedback']);
+
+        // Back to points and without workflow: grades are visible at once.
+        update_assign::execute($result['cmid'], '', false, '', false, [], [], -1, true, 15, '', 0);
+        grade_submission::execute($result['cmid'], $student->id, true, 12);
+        $gradebook = grade_get_grades($course->id, 'mod', 'assign', $result['assignid'], $student->id);
+        $this->assertEquals(12, $gradebook->items[0]->grades[$student->id]->grade);
+    }
+
+    /**
+     * Students cannot read or change grades.
+     */
+    public function test_student_cannot_grade(): void {
+        $this->resetAfterTest();
+        $gen = $this->getDataGenerator();
+        $course = $gen->create_course();
+        $this->setUser($gen->create_and_enrol($course, 'editingteacher'));
+        $result = create_assign::execute($course->id, 0, 'Sichtbar', '', [], 0, 1, 15);
+        $student = $gen->create_and_enrol($course, 'student');
+        $this->setUser($student);
+        $this->expectException(\required_capability_exception::class);
+        grade_submission::execute($result['cmid'], $student->id, true, 15);
     }
 }
