@@ -22,6 +22,7 @@ use core_external\external_multiple_structure;
 use core_external\external_single_structure;
 use core_external\external_value;
 use local_coursefiles\local\files;
+use local_coursefiles\local\grading;
 
 /**
  * Changes an existing assignment: name, task description, attached files and due date.
@@ -57,6 +58,15 @@ class update_assign extends external_api {
                 []
             ),
             'duedate' => new external_value(PARAM_INT, 'New due date (timestamp, 0 = none, -1 = unchanged)', VALUE_DEFAULT, -1),
+            'changegrade' => new external_value(
+                PARAM_BOOL,
+                'Change the grade type (grade, gradescale); only while nobody has a grade',
+                VALUE_DEFAULT,
+                false
+            ),
+            'grade' => new external_value(PARAM_INT, 'Maximum points, 0 = no grade', VALUE_DEFAULT, 100),
+            'gradescale' => new external_value(PARAM_TEXT, 'Grade with the scale of this name instead', VALUE_DEFAULT, ''),
+            'markingworkflow' => new external_value(PARAM_INT, 'Marking workflow: 1 on, 0 off, -1 unchanged', VALUE_DEFAULT, -1),
         ]);
     }
 
@@ -71,6 +81,10 @@ class update_assign extends external_api {
      * @param array $keepfiles
      * @param array $files
      * @param int $duedate
+     * @param bool $changegrade
+     * @param int $grade
+     * @param string $gradescale
+     * @param int $markingworkflow
      * @return array
      */
     public static function execute(
@@ -81,7 +95,11 @@ class update_assign extends external_api {
         bool $changefiles = false,
         array $keepfiles = [],
         array $files = [],
-        int $duedate = -1
+        int $duedate = -1,
+        bool $changegrade = false,
+        int $grade = 100,
+        string $gradescale = '',
+        int $markingworkflow = -1
     ): array {
         global $CFG, $DB;
         require_once($CFG->dirroot . '/mod/assign/locallib.php');
@@ -89,6 +107,8 @@ class update_assign extends external_api {
         $params = self::validate_parameters(self::execute_parameters(), [
             'cmid' => $cmid, 'name' => $name, 'changeintro' => $changeintro, 'intro' => $intro,
             'changefiles' => $changefiles, 'keepfiles' => $keepfiles, 'files' => $files, 'duedate' => $duedate,
+            'changegrade' => $changegrade, 'grade' => $grade, 'gradescale' => $gradescale,
+            'markingworkflow' => $markingworkflow,
         ]);
         $cm = get_coursemodule_from_id('assign', $params['cmid'], 0, false, MUST_EXIST);
         $course = get_course($cm->course);
@@ -129,8 +149,28 @@ class update_assign extends external_api {
                 ], $file['content']);
             }
         }
+        $gradechanged = false;
+        if ($params['changegrade']) {
+            $value = grading::grade_value($params['grade'], $params['gradescale'], $course);
+            if ($value !== (int)$record->grade) {
+                if (grading::graded($record->id)) {
+                    throw new \moodle_exception('gradingstarted', 'local_coursefiles');
+                }
+                $record->grade = $value;
+                $gradechanged = true;
+            }
+        }
+        if ($params['markingworkflow'] >= 0) {
+            $record->markingworkflow = $params['markingworkflow'] ? 1 : 0;
+        }
         $record->timemodified = time();
         $DB->update_record('assign', $record);
+        if ($gradechanged) {
+            require_once($CFG->dirroot . '/mod/assign/lib.php');
+            $record->cmidnumber = $cm->idnumber;
+            $record->courseid = $cm->course;
+            assign_grade_item_update($record);
+        }
 
         if ($params['duedate'] >= 0) {
             $assign = new \assign($context, $cm, $course);
@@ -145,6 +185,8 @@ class update_assign extends external_api {
             'name' => $record->name,
             'duedate' => (int)$record->duedate,
             'files' => array_values(array_map(fn($f) => $f->get_filename(), $attached)),
+            'grade' => (int)$record->grade,
+            'markingworkflow' => (int)$record->markingworkflow,
         ];
     }
 
@@ -159,6 +201,8 @@ class update_assign extends external_api {
             'name' => new external_value(PARAM_TEXT, 'Name now'),
             'duedate' => new external_value(PARAM_INT, 'Due date now'),
             'files' => new external_multiple_structure(new external_value(PARAM_FILE, 'File name'), 'Attached files now'),
+            'grade' => new external_value(PARAM_INT, 'Grade type now: maximum points, 0 = none, negative = scale ID'),
+            'markingworkflow' => new external_value(PARAM_INT, 'Marking workflow now'),
         ]);
     }
 }

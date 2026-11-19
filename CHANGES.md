@@ -1,5 +1,15 @@
 # Changes
 
+## 0.13.0 (2026-11-20)
+
+- `create_assign` and `update_assign` set how an assignment is graded: maximum points, no grade (`grade` 0), or a
+  scale by name (`gradescale`, a site scale or one of the course), and the marking workflow (`markingworkflow`), so
+  students see grades only once they are released. The grade type can only change while nobody has a grade.
+- New `get_assign_grading`: grade type with the scale items, marking workflow and, per participant, grade, workflow
+  state, feedback comment and number of feedback files.
+- New `grade_submission`: grades one participant – grade, feedback comment and marking workflow state.
+- New `release_grades`: releases grades (all graded participants or the ones given), so they reach the gradebook.
+
 ## 0.12.0 (2026-11-19)
 
 - New `update_assign`: changes an existing assignment – name, task description, attached files (keep some, add or

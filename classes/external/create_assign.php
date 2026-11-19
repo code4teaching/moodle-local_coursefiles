@@ -22,6 +22,7 @@ use core_external\external_multiple_structure;
 use core_external\external_single_structure;
 use core_external\external_value;
 use local_coursefiles\local\files;
+use local_coursefiles\local\grading;
 
 /**
  * Creates an assignment in a course section: file submissions, a due date, the task as text and/or attached files.
@@ -52,6 +53,19 @@ class create_assign extends external_api {
             ),
             'duedate' => new external_value(PARAM_INT, 'Due date (timestamp, 0 = none)', VALUE_DEFAULT, 0),
             'visible' => new external_value(PARAM_INT, 'Visible (1) or hidden (0)', VALUE_DEFAULT, 0),
+            'grade' => new external_value(PARAM_INT, 'Maximum points, 0 = no grade', VALUE_DEFAULT, 100),
+            'gradescale' => new external_value(
+                PARAM_TEXT,
+                'Grade with the scale of this name (site scale or scale of the course) instead of points',
+                VALUE_DEFAULT,
+                ''
+            ),
+            'markingworkflow' => new external_value(
+                PARAM_INT,
+                'Marking workflow (1): students see grades only once they are released',
+                VALUE_DEFAULT,
+                0
+            ),
         ]);
     }
 
@@ -65,6 +79,9 @@ class create_assign extends external_api {
      * @param array $files
      * @param int $duedate
      * @param int $visible
+     * @param int $grade
+     * @param string $gradescale
+     * @param int $markingworkflow
      * @return array
      */
     public static function execute(
@@ -74,7 +91,10 @@ class create_assign extends external_api {
         string $intro = '',
         array $files = [],
         int $duedate = 0,
-        int $visible = 0
+        int $visible = 0,
+        int $grade = 100,
+        string $gradescale = '',
+        int $markingworkflow = 0
     ): array {
         global $CFG, $DB;
         require_once($CFG->dirroot . '/course/lib.php');
@@ -83,7 +103,8 @@ class create_assign extends external_api {
 
         $params = self::validate_parameters(self::execute_parameters(), [
             'courseid' => $courseid, 'sectionnum' => $sectionnum, 'name' => $name, 'intro' => $intro,
-            'files' => $files, 'duedate' => $duedate, 'visible' => $visible,
+            'files' => $files, 'duedate' => $duedate, 'visible' => $visible, 'grade' => $grade,
+            'gradescale' => $gradescale, 'markingworkflow' => $markingworkflow,
         ]);
 
         $course = get_course($params['courseid']);
@@ -112,7 +133,7 @@ class create_assign extends external_api {
         $assign->duedate = $params['duedate'];
         $assign->cutoffdate = 0;
         $assign->gradingduedate = 0;
-        $assign->grade = 100;
+        $assign->grade = grading::grade_value($params['grade'], $params['gradescale'], $course);
         $assign->completionsubmit = 0;
         $assign->teamsubmission = 0;
         $assign->requireallteammemberssubmit = 0;
@@ -121,7 +142,7 @@ class create_assign extends external_api {
         $assign->hidegrader = 0;
         $assign->attemptreopenmethod = 'untilpass';
         $assign->maxattempts = 1;
-        $assign->markingworkflow = 0;
+        $assign->markingworkflow = $params['markingworkflow'] ? 1 : 0;
         $assign->markingallocation = 0;
         $assign->markinganonymous = 0;
         $assign->preventsubmissionnotingroup = 0;
