@@ -44,8 +44,14 @@ final class feedback_files_test extends \advanced_testcase {
         $this->assertSame(1, $result['numfiles']);
 
         $context = \context_module::instance($assign->cmid);
-        $stored = get_file_storage()->get_area_files($context->id, 'assignfeedback_file', 'feedback_files',
-            $result['gradeid'], 'filename', false);
+        $stored = get_file_storage()->get_area_files(
+            $context->id,
+            'assignfeedback_file',
+            'feedback_files',
+            $result['gradeid'],
+            'filename',
+            false
+        );
         $this->assertSame(['korrigiert.pdf'], array_values(array_map(fn($f) => $f->get_filename(), $stored)));
         $this->assertSame('1', (string)$DB->get_field('assignfeedback_file', 'numfiles', ['grade' => $result['gradeid']]));
 
@@ -54,8 +60,14 @@ final class feedback_files_test extends \advanced_testcase {
             ['filename' => 'b.pdf', 'content' => base64_encode('b')],
         ]);
         $this->assertSame($result['gradeid'], $again['gradeid']);
-        $stored = get_file_storage()->get_area_files($context->id, 'assignfeedback_file', 'feedback_files',
-            $again['gradeid'], 'filename', false);
+        $stored = get_file_storage()->get_area_files(
+            $context->id,
+            'assignfeedback_file',
+            'feedback_files',
+            $again['gradeid'],
+            'filename',
+            false
+        );
         $this->assertCount(2, $stored);
         $this->assertSame('2', (string)$DB->get_field('assignfeedback_file', 'numfiles', ['grade' => $again['gradeid']]));
     }
