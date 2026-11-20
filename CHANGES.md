@@ -1,6 +1,6 @@
 # Changes
 
-## 0.16.0 (unreleased)
+## 0.16.0 (2026-11-21)
 
 - Automatic approval of course requests works with any naming scheme: new settings *Scheme for the full name* and
   *Scheme for the short name* (regular expressions with a group `class` and an optional group `key`, which has to be the
