@@ -1,5 +1,12 @@
 # Changes
 
+## 0.15.0 (2026-11-20)
+
+- `create_assign`: new assignments require students to click the submit button (`submissiondrafts`, default 1). Until
+  then students can upload parts and add to them later; the teacher sees the draft. A submitted assignment is fixed,
+  so a model solution shown "only to students who submitted" cannot be copied into the submission afterwards.
+  Pass `submissiondrafts` 0 for the old behaviour.
+
 ## 0.14.0 (2026-11-20)
 
 - Course requests can be approved automatically (setting *Approve course requests automatically*, off by default). A

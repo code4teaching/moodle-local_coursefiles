@@ -61,6 +61,7 @@ final class assign_test extends \advanced_testcase {
         $record = $DB->get_record('assign', ['id' => $result['assignid']], '*', MUST_EXIST);
         $this->assertSame('Aufgabe Schleifen', $record->name);
         $this->assertSame($due, (int)$record->duedate);
+        $this->assertSame(1, (int)$record->submissiondrafts);   // Submissions stay drafts until students submit.
 
         $context = \context_module::instance($cm->id);
         $files = get_file_storage()->get_area_files($context->id, 'mod_assign', 'introattachment', 0, 'filename', false);

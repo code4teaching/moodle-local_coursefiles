@@ -66,6 +66,12 @@ class create_assign extends external_api {
                 VALUE_DEFAULT,
                 0
             ),
+            'submissiondrafts' => new external_value(
+                PARAM_INT,
+                'Require students to click the submit button (1): until then a submission is a draft they can add to',
+                VALUE_DEFAULT,
+                1
+            ),
         ]);
     }
 
@@ -82,6 +88,7 @@ class create_assign extends external_api {
      * @param int $grade
      * @param string $gradescale
      * @param int $markingworkflow
+     * @param int $submissiondrafts
      * @return array
      */
     public static function execute(
@@ -94,7 +101,8 @@ class create_assign extends external_api {
         int $visible = 0,
         int $grade = 100,
         string $gradescale = '',
-        int $markingworkflow = 0
+        int $markingworkflow = 0,
+        int $submissiondrafts = 1
     ): array {
         global $CFG, $DB;
         require_once($CFG->dirroot . '/course/lib.php');
@@ -105,6 +113,7 @@ class create_assign extends external_api {
             'courseid' => $courseid, 'sectionnum' => $sectionnum, 'name' => $name, 'intro' => $intro,
             'files' => $files, 'duedate' => $duedate, 'visible' => $visible, 'grade' => $grade,
             'gradescale' => $gradescale, 'markingworkflow' => $markingworkflow,
+            'submissiondrafts' => $submissiondrafts,
         ]);
 
         $course = get_course($params['courseid']);
@@ -124,7 +133,7 @@ class create_assign extends external_api {
         $assign->introattachments = $params['files'] ? files::to_draft(files::decode($params['files'], $course, $context)) : 0;
         $assign->cmidnumber = '';
         $assign->alwaysshowdescription = 1;
-        $assign->submissiondrafts = 0;
+        $assign->submissiondrafts = $params['submissiondrafts'] ? 1 : 0;
         $assign->requiresubmissionstatement = 0;
         $assign->sendnotifications = 0;
         $assign->sendlatenotifications = 0;
