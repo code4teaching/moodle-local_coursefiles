@@ -8,6 +8,9 @@
   as teacher. The person named in *Notify about created courses* (default: main administrator) gets a message to check
   it; approvers do not get the usual “new request” message. Everything else stays a normal request.
 - `request_course` also returns `courseid` and `categoryname` when the course was created at once (`requestid` is 0).
+- New `get_autoapproved_courses` and `check_autoapproved_course`: the approver sees the courses created automatically
+  (with their teachers) and marks them as checked. The plugin stores only course, time created and time checked
+  (new table `local_coursefiles_autoappr`), no personal data.
 
 ## 0.13.0 (2026-11-20)
 

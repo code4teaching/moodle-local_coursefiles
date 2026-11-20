@@ -167,6 +167,18 @@ $functions = [
         'type'         => 'write',
         'capabilities' => 'enrol/self:config, moodle/course:enrolconfig',
     ],
+    'local_coursefiles_get_autoapproved_courses' => [
+        'classname'    => 'local_coursefiles\external\get_autoapproved_courses',
+        'description'  => 'Lists courses created automatically from course requests, for the approver to check.',
+        'type'         => 'read',
+        'capabilities' => 'moodle/site:approvecourse',
+    ],
+    'local_coursefiles_check_autoapproved_course' => [
+        'classname'    => 'local_coursefiles\external\check_autoapproved_course',
+        'description'  => 'Marks an automatically created course as checked.',
+        'type'         => 'write',
+        'capabilities' => 'moodle/site:approvecourse',
+    ],
 ];
 
 $services = [

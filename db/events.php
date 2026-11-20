@@ -29,4 +29,8 @@ $observers = [
         'eventname' => '\core\event\role_assigned',
         'callback'  => '\local_coursefiles\observer::role_assigned',
     ],
+    [
+        'eventname' => '\core\event\course_deleted',
+        'callback'  => '\local_coursefiles\observer::course_deleted',
+    ],
 ];

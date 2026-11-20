@@ -32,6 +32,8 @@ use core_external\external_api;
 #[\PHPUnit\Framework\Attributes\CoversClass(reject_course_request::class)]
 #[\PHPUnit\Framework\Attributes\CoversClass(\local_coursefiles\local\requests::class)]
 #[\PHPUnit\Framework\Attributes\CoversClass(\local_coursefiles\local\autoapprove::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(get_autoapproved_courses::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(check_autoapproved_course::class)]
 final class requests_test extends \advanced_testcase {
     /**
      * Turns course requests on and lets all users request courses (no standard role has this capability).
@@ -157,6 +159,43 @@ final class requests_test extends \advanced_testcase {
         $mine = array_filter($sink->get_messages(), fn($m) => $m->component === 'local_coursefiles');
         $this->assertCount(1, $mine);
         $this->assertEquals($checker->id, reset($mine)->useridto);
+
+        // The approver sees it in the list until it is marked as checked.
+        $this->setAdminUser();
+        $list = external_api::clean_returnvalue(get_autoapproved_courses::execute_returns(), get_autoapproved_courses::execute());
+        $this->assertTrue($list['enabled']);
+        $this->assertCount(1, $list['courses']);
+        $entry = $list['courses'][0];
+        $this->assertSame($course->id, (int)$entry['courseid']);
+        $this->assertSame(fullname($teacher), $entry['teachers']);
+        check_autoapproved_course::execute($entry['id']);
+        $this->assertCount(0, get_autoapproved_courses::execute()['courses']);
+        $this->assertCount(1, get_autoapproved_courses::execute(1)['courses']);
+
+        // Teachers cannot read the list.
+        $this->setUser($teacher);
+        $this->expectException(\required_capability_exception::class);
+        get_autoapproved_courses::execute();
+    }
+
+    /**
+     * Deleting the course removes it from the list.
+     */
+    public function test_autoapproved_course_deleted(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->enable_requests();
+        set_config('autoapprove', 1, 'local_coursefiles');
+        $cat = $this->getDataGenerator()->create_category();
+        $this->getDataGenerator()->create_course(['fullname' => '2025 11FI2 MusA Datenbanken', 'category' => $cat->id]);
+        $this->setUser($this->getDataGenerator()->create_user());
+        $sink = $this->redirectMessages();
+        $r = request_course::execute('2026 11FI2 SebH Objektorientierte Programmierung', '2026 11FI2 SebH OOP');
+        $this->assertTrue($DB->record_exists('local_coursefiles_autoappr', ['courseid' => $r['courseid']]));
+        $this->setAdminUser();
+        delete_course($r['courseid'], false);
+        $this->assertFalse($DB->record_exists('local_coursefiles_autoappr', ['courseid' => $r['courseid']]));
+        $sink->close();
     }
 
     /**

@@ -121,6 +121,7 @@ class autoapprove {
         ]);
         $courseid = (int)requests::load((int)$id)->approve();
         course_change_visibility($courseid, false);
+        $DB->insert_record('local_coursefiles_autoappr', (object)['courseid' => $courseid, 'timecreated' => time(), 'timechecked' => 0]);
         $transaction->allow_commit();
 
         self::notify($courseid, $category);
@@ -177,5 +178,43 @@ class autoapprove {
         $message->contexturlname = $a->fullname;
         $message->courseid = $courseid;
         message_send($message);
+    }
+
+    /**
+     * Automatically created courses for the approver, newest first. Who asked is read from the course's teachers,
+     * so the plugin keeps no personal data.
+     *
+     * @param bool $withchecked also the ones already checked
+     * @return array
+     */
+    public static function list(bool $withchecked): array {
+        global $DB, $CFG;
+        $where = $withchecked ? '' : 'WHERE a.timechecked = 0';
+        $records = $DB->get_records_sql(
+            "SELECT a.id, a.courseid, a.timecreated, a.timechecked, c.fullname, c.shortname, c.category, c.visible
+               FROM {local_coursefiles_autoappr} a
+               JOIN {course} c ON c.id = a.courseid
+             $where
+           ORDER BY a.timecreated DESC, a.id DESC"
+        );
+        $out = [];
+        foreach ($records as $r) {
+            $category = \core_course_category::get($r->category, IGNORE_MISSING, true);
+            $context = \context_course::instance($r->courseid);
+            $teachers = $CFG->creatornewroleid ? get_role_users((int)$CFG->creatornewroleid, $context, false, 'u.*') : [];
+            $out[] = [
+                'id' => (int)$r->id,
+                'courseid' => (int)$r->courseid,
+                'fullname' => $r->fullname,
+                'shortname' => $r->shortname,
+                'categoryid' => (int)$r->category,
+                'categoryname' => $category ? $category->get_nested_name(false) : '',
+                'visible' => (int)$r->visible,
+                'teachers' => implode(', ', array_map('fullname', $teachers)),
+                'timecreated' => (int)$r->timecreated,
+                'timechecked' => (int)$r->timechecked,
+            ];
+        }
+        return $out;
     }
 }

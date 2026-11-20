@@ -39,4 +39,14 @@ class observer {
         }
         local\teacherrole::grant((int)$event->relateduserid);
     }
+
+    /**
+     * Forgets an automatically created course when it is deleted.
+     *
+     * @param \core\event\course_deleted $event
+     */
+    public static function course_deleted(\core\event\course_deleted $event): void {
+        global $DB;
+        $DB->delete_records('local_coursefiles_autoappr', ['courseid' => $event->objectid]);
+    }
 }

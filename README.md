@@ -39,6 +39,8 @@ Moodle core cannot create file resources or folders through web services, and `c
 | `local_coursefiles_get_course_requests` | Lists the caller's pending requests, or all of them for approvers. |
 | `local_coursefiles_approve_course_request` | Approves a request, optionally with a corrected name and another category. |
 | `local_coursefiles_reject_course_request` | Rejects a request; the reason is sent to the requester. |
+| `local_coursefiles_get_autoapproved_courses` | Lists courses created automatically from requests, with their teachers, for the approver to check. |
+| `local_coursefiles_check_autoapproved_course` | Marks such a course as checked. |
 | `local_coursefiles_get_self_enrolment` | Reads the self enrolment of a course: on or off and the enrolment key. |
 | `local_coursefiles_set_self_enrolment` | Turns self enrolment on or off and sets the enrolment key; adds the method (role: student) if missing. |
 
@@ -72,7 +74,8 @@ Every function checks the capabilities of the token's user, as the Moodle interf
 - `request_course`: `moodle/course:request` (authenticated users have it by default; users who can create courses
   themselves cannot request one, as in Moodle)
 - `get_course_requests`: own requests for everyone; `all=1` needs `moodle/site:approvecourse`
-- `approve_course_request`, `reject_course_request`: `moodle/site:approvecourse`
+- `approve_course_request`, `reject_course_request`, `get_autoapproved_courses`, `check_autoapproved_course`:
+  `moodle/site:approvecourse`
 - `get_self_enrolment`, `set_self_enrolment`: `enrol/self:config` (teachers have it by default); adding the method also
   needs `moodle/course:enrolconfig`. The self enrolment plugin must be enabled on the site
 
