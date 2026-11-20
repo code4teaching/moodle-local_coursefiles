@@ -121,7 +121,9 @@ class autoapprove {
         ]);
         $courseid = (int)requests::load((int)$id)->approve();
         course_change_visibility($courseid, false);
-        $DB->insert_record('local_coursefiles_autoappr', (object)['courseid' => $courseid, 'timecreated' => time(), 'timechecked' => 0]);
+        $DB->insert_record('local_coursefiles_autoappr', (object)[
+            'courseid' => $courseid, 'timecreated' => time(), 'timechecked' => 0,
+        ]);
         $transaction->allow_commit();
 
         self::notify($courseid, $category);

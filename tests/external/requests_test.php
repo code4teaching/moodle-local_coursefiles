@@ -166,7 +166,7 @@ final class requests_test extends \advanced_testcase {
         $this->assertTrue($list['enabled']);
         $this->assertCount(1, $list['courses']);
         $entry = $list['courses'][0];
-        $this->assertSame($course->id, (int)$entry['courseid']);
+        $this->assertEquals($course->id, $entry['courseid']);
         $this->assertSame(fullname($teacher), $entry['teachers']);
         check_autoapproved_course::execute($entry['id']);
         $this->assertCount(0, get_autoapproved_courses::execute()['courses']);
