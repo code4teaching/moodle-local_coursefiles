@@ -32,7 +32,7 @@ function xmldb_local_coursefiles_upgrade($oldversion) {
     global $DB;
     $dbman = $DB->get_manager();
 
-    if ($oldversion < 2026112100) {
+    if ($oldversion < 2026112001) {
         // Courses created automatically from course requests, so the approver can check them later.
         $table = new xmldb_table('local_coursefiles_autoappr');
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
@@ -44,7 +44,7 @@ function xmldb_local_coursefiles_upgrade($oldversion) {
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
-        upgrade_plugin_savepoint(true, 2026112100, 'local', 'coursefiles');
+        upgrade_plugin_savepoint(true, 2026112001, 'local', 'coursefiles');
     }
 
     return true;
