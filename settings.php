@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Settings: site role for teachers.
+ * Settings: site role for teachers, automatic approval of course requests.
  *
  * @package    local_coursefiles
  * @copyright  2026 Holger Sebastião
@@ -56,5 +56,24 @@ if ($hassiteconfig) {
         );
         $siterole->set_updatedcallback([\local_coursefiles\local\teacherrole::class, 'sync']);
         $settings->add($siterole);
+
+        $settings->add(new admin_setting_heading(
+            'local_coursefiles/autoapproveheading',
+            get_string('autoapproveheading', 'local_coursefiles'),
+            get_string('autoapproveheading_desc', 'local_coursefiles')
+        ));
+        $settings->add(new admin_setting_configcheckbox(
+            'local_coursefiles/autoapprove',
+            get_string('autoapprove', 'local_coursefiles'),
+            get_string('autoapprove_desc', 'local_coursefiles'),
+            0
+        ));
+        $settings->add(new admin_setting_configtext(
+            'local_coursefiles/autoapprovenotify',
+            get_string('autoapprovenotify', 'local_coursefiles'),
+            get_string('autoapprovenotify_desc', 'local_coursefiles'),
+            '',
+            PARAM_USERNAME
+        ));
     }
 }

@@ -31,6 +31,7 @@ use core_external\external_api;
 #[\PHPUnit\Framework\Attributes\CoversClass(approve_course_request::class)]
 #[\PHPUnit\Framework\Attributes\CoversClass(reject_course_request::class)]
 #[\PHPUnit\Framework\Attributes\CoversClass(\local_coursefiles\local\requests::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_coursefiles\local\autoapprove::class)]
 final class requests_test extends \advanced_testcase {
     /**
      * Turns course requests on and lets all users request courses (no standard role has this capability).
@@ -124,5 +125,56 @@ final class requests_test extends \advanced_testcase {
         $this->setUser($this->getDataGenerator()->create_user());
         $this->expectException(\required_capability_exception::class);
         approve_course_request::execute($r['requestid']);
+    }
+
+    /**
+     * With automatic approval the course is created at once, hidden, in the category of the class; the checker is told.
+     */
+    public function test_autoapprove(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->enable_requests();
+        $checker = $this->getDataGenerator()->create_user(['username' => 'pruefer']);
+        set_config('autoapprove', 1, 'local_coursefiles');
+        set_config('autoapprovenotify', 'pruefer', 'local_coursefiles');
+        $cat = $this->getDataGenerator()->create_category(['name' => 'BS']);
+        $archive = $this->getDataGenerator()->create_category(['name' => 'Archiv']);
+        $this->getDataGenerator()->create_course(['fullname' => '2025 11FI2 MusA Datenbanken', 'category' => $cat->id]);
+        $this->getDataGenerator()->create_course(['fullname' => '2024 11FI2 MusA Netzwerke', 'category' => $archive->id]);
+        $teacher = $this->getDataGenerator()->create_user();
+        $this->setUser($teacher);
+
+        $sink = $this->redirectMessages();
+        $r = request_course::execute('2026 11FI2 SebH Objektorientierte Programmierung', '2026 11FI2 SebH OOP');
+        $r = external_api::clean_returnvalue(request_course::execute_returns(), $r);
+        $this->assertSame(0, $r['requestid']);
+        $this->assertGreaterThan(0, $r['courseid']);
+        $course = get_course($r['courseid']);
+        $this->assertEquals($cat->id, $course->category);
+        $this->assertEquals(0, $course->visible);
+        $this->assertTrue(is_enrolled(\context_course::instance($course->id), $teacher));
+        $this->assertFalse($DB->record_exists('course_request', []));
+        $mine = array_filter($sink->get_messages(), fn($m) => $m->component === 'local_coursefiles');
+        $this->assertCount(1, $mine);
+        $this->assertEquals($checker->id, reset($mine)->useridto);
+    }
+
+    /**
+     * A class without a course, or a name off the scheme, stays a normal request.
+     */
+    public function test_autoapprove_falls_back(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->enable_requests();
+        set_config('autoapprove', 1, 'local_coursefiles');
+        $this->setUser($this->getDataGenerator()->create_user());
+        $r = request_course::execute('2026 12FI9 SebH Netzwerke', '2026 12FI9 SebH NW');
+        $this->assertGreaterThan(0, $r['requestid']);
+        $this->assertSame(0, $r['courseid']);
+        $cat = $this->getDataGenerator()->create_category();
+        $this->getDataGenerator()->create_course(['fullname' => '2025 11FI2 MusA Datenbanken', 'category' => $cat->id]);
+        $r = request_course::execute('OOP für die 11FI2', '11FI2-OOP');
+        $this->assertGreaterThan(0, $r['requestid']);
+        $this->assertEquals(2, $DB->count_records('course_request'));
     }
 }

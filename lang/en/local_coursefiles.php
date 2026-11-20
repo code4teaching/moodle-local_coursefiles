@@ -24,6 +24,20 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['autoapprove'] = 'Approve course requests automatically';
+$string['autoapprove_desc'] = 'If a request follows the scheme “school year class initials subject” (e.g. 2026 11FI2 SebH Objektorientierte Programmierung, short name 2026 11FI2 SebH OOP) and the class already has a course, the course is created at once: hidden, in the category of the newest course of that class, with the requester as teacher. Otherwise it stays a normal request.';
+$string['autoapprovedbody'] = '{$a->requester} requested a course, and it was created at once.
+
+Name: {$a->fullname}
+Short name: {$a->shortname}
+Category: {$a->category}
+
+The course is hidden. Please check the name and the category: {$a->url}';
+$string['autoapprovedsubject'] = 'Course created automatically: {$a->fullname}';
+$string['autoapproveheading'] = 'Course requests';
+$string['autoapproveheading_desc'] = 'Teachers request courses from VisuDesk. Courses can be created at once and checked afterwards.';
+$string['autoapprovenotify'] = 'Notify about created courses';
+$string['autoapprovenotify_desc'] = 'User name of the person who checks automatically created courses. Empty: the main administrator.';
 $string['availabilitydisabled'] = 'Restrict access is turned off on this site (Site administration → Advanced features → Enable restricted access), so a release date would have no effect.';
 $string['backupfailed'] = 'The backup could not be created.';
 $string['backupwithusers'] = 'The site settings force user data into course backups. No backup without user data is possible.';
@@ -40,6 +54,7 @@ $string['gradetoohigh'] = 'The grade is higher than the maximum of {$a} points.'
 $string['gradingstarted'] = 'Somebody already has a grade in this assignment, so its grade type cannot change any more.';
 $string['invalidcontent'] = 'The content of {$a} is not valid base64.';
 $string['invalidfilename'] = 'Invalid or duplicate file name: {$a}';
+$string['messageprovider:courseautoapproved'] = 'Course created automatically from a request';
 $string['nofiles'] = 'No files given.';
 $string['nogradetype'] = 'This assignment is not graded.';
 $string['nomarkingworkflow'] = 'This assignment has no marking workflow, so there is nothing to release: grades are visible at once.';

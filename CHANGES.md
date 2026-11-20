@@ -1,5 +1,14 @@
 # Changes
 
+## 0.14.0 (2026-11-20)
+
+- Course requests can be approved automatically (setting *Approve course requests automatically*, off by default). A
+  request that follows the scheme “school year class initials subject” for a class that already has a course is created
+  at once: hidden, in the category of the newest course of that class (archive categories left out), with the requester
+  as teacher. The person named in *Notify about created courses* (default: main administrator) gets a message to check
+  it; approvers do not get the usual “new request” message. Everything else stays a normal request.
+- `request_course` also returns `courseid` and `categoryname` when the course was created at once (`requestid` is 0).
+
 ## 0.13.0 (2026-11-20)
 
 - `create_assign` and `update_assign` set how an assignment is graded: maximum points, no grade (`grade` 0), or a

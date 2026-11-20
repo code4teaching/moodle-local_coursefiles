@@ -24,6 +24,20 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['autoapprove'] = 'Kursanträge automatisch annehmen';
+$string['autoapprove_desc'] = 'Folgt ein Antrag dem Schema „Schuljahr Klasse Kürzel Fach“ (z. B. 2026 11FI2 SebH Objektorientierte Programmierung, Kurzname 2026 11FI2 SebH OOP) und hat die Klasse schon einen Kurs, wird der Kurs sofort angelegt: verborgen, im Kursbereich des neuesten Kurses dieser Klasse, mit der antragstellenden Person als Trainer/in. Sonst bleibt es ein normaler Antrag.';
+$string['autoapprovedbody'] = '{$a->requester} hat einen Kurs beantragt, er wurde sofort angelegt.
+
+Name: {$a->fullname}
+Kurzname: {$a->shortname}
+Kursbereich: {$a->category}
+
+Der Kurs ist verborgen. Bitte Name und Kursbereich prüfen: {$a->url}';
+$string['autoapprovedsubject'] = 'Kurs automatisch angelegt: {$a->fullname}';
+$string['autoapproveheading'] = 'Kursanträge';
+$string['autoapproveheading_desc'] = 'Lehrkräfte beantragen Kurse aus VisuDesk. Kurse können sofort angelegt und danach geprüft werden.';
+$string['autoapprovenotify'] = 'Benachrichtigung über angelegte Kurse';
+$string['autoapprovenotify_desc'] = 'Anmeldename der Person, die automatisch angelegte Kurse prüft. Leer: die Hauptadministration.';
 $string['availabilitydisabled'] = 'Voraussetzungen sind auf dieser Website ausgeschaltet (Website-Administration → Erweiterte Funktionen → Voraussetzungen aktivieren). Ein Freigabedatum hätte deshalb keine Wirkung.';
 $string['connectbutton'] = 'Mit VisuDesk verbinden';
 $string['connectinvalid'] = 'Dieser Link zum Verbinden einer App ist ungültig. Bitte in der App noch einmal auf „Mit Moodle verbinden“ klicken.';
@@ -35,6 +49,7 @@ $string['feedbackfilesdisabled'] = 'In dieser Aufgabe sind Feedbackdateien ausge
 $string['gradenotinscale'] = 'Diese Note gehört nicht zur Skala der Aufgabe.';
 $string['gradetoohigh'] = 'Die Bewertung ist höher als das Maximum von {$a} Punkten.';
 $string['gradingstarted'] = 'In dieser Aufgabe hat schon jemand eine Bewertung, deshalb lässt sich die Bewertungsart nicht mehr ändern.';
+$string['messageprovider:courseautoapproved'] = 'Kurs automatisch aus einem Antrag angelegt';
 $string['nogradetype'] = 'Diese Aufgabe wird nicht bewertet.';
 $string['nomarkingworkflow'] = 'Diese Aufgabe hat keinen Bewertungs-Workflow. Freigeben ist nicht nötig, Bewertungen sind sofort sichtbar.';
 $string['notparticipant'] = 'Diese Person nimmt nicht an der Aufgabe teil.';

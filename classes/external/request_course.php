@@ -20,6 +20,7 @@ use core_external\external_api;
 use core_external\external_function_parameters;
 use core_external\external_single_structure;
 use core_external\external_value;
+use local_coursefiles\local\autoapprove;
 use local_coursefiles\local\requests;
 
 /**
@@ -72,6 +73,11 @@ class request_course extends external_api {
         }
         requests::check_shortname($short);
 
+        $auto = autoapprove::try_approve($full, $short, $params['reason']);
+        if ($auto) {
+            return ['requestid' => 0, 'courseid' => $auto['courseid'], 'categoryname' => $auto['categoryname']];
+        }
+
         $data = (object)[
             'fullname' => $full,
             'shortname' => $short,
@@ -80,7 +86,7 @@ class request_course extends external_api {
             'summary_editor' => ['text' => '', 'format' => FORMAT_HTML],
         ];
         $request = $cls::create($data);
-        return ['requestid' => (int)$request->id];
+        return ['requestid' => (int)$request->id, 'courseid' => 0, 'categoryname' => ''];
     }
 
     /**
@@ -90,7 +96,9 @@ class request_course extends external_api {
      */
     public static function execute_returns(): external_single_structure {
         return new external_single_structure([
-            'requestid' => new external_value(PARAM_INT, 'ID of the pending request'),
+            'requestid' => new external_value(PARAM_INT, 'ID of the pending request (0 if the course was created at once)'),
+            'courseid' => new external_value(PARAM_INT, 'ID of the course if it was created at once, else 0'),
+            'categoryname' => new external_value(PARAM_TEXT, 'Category of the course created at once, else empty'),
         ]);
     }
 }

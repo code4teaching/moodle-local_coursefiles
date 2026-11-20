@@ -35,7 +35,7 @@ Moodle core cannot create file resources or folders through web services, and `c
 | `local_coursefiles_update_section` | Changes name, summary or visibility of a section. |
 | `local_coursefiles_backup_course` | Creates a Moodle backup (.mbz) of a course **without user data** and returns a download address. |
 | `local_coursefiles_move_section` | Moves a section, with its activities, to another position. |
-| `local_coursefiles_request_course` | Asks for a new course (Moodle course request). |
+| `local_coursefiles_request_course` | Asks for a new course (Moodle course request); with automatic approval on, a course that follows the naming scheme is created at once. |
 | `local_coursefiles_get_course_requests` | Lists the caller's pending requests, or all of them for approvers. |
 | `local_coursefiles_approve_course_request` | Approves a request, optionally with a corrected name and another category. |
 | `local_coursefiles_reject_course_request` | Rejects a request; the reason is sent to the requester. |
