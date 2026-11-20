@@ -1,5 +1,12 @@
 # Changes
 
+## 0.16.0 (unreleased)
+
+- Automatic approval of course requests works with any naming scheme: new settings *Scheme for the full name* and
+  *Scheme for the short name* (regular expressions with a group `class` and an optional group `key`, which has to be the
+  same in both names) and *Archive categories* (text in the category path, default “Archiv”). The defaults keep the
+  scheme “school year class initials subject”.
+
 ## 0.15.0 (2026-11-20)
 
 - `create_assign`: new assignments require students to click the submit button (`submissiondrafts`, default 1). Until

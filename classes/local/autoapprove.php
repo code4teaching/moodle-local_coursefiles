@@ -19,19 +19,71 @@ namespace local_coursefiles\local;
 /**
  * Approves course requests at once when they follow the naming scheme and the class already has a course.
  *
- * Scheme: "school year, class, initials, subject", e.g. "2026 11FI2 SebH Objektorientierte Programmierung" with the
- * short name "2026 11FI2 SebH OOP". The new course goes into the category of the newest course of the same class,
- * hidden, with the requester as teacher. One person chosen in the settings gets a message to check it.
+ * Default scheme: "school year, class, initials, subject", e.g. "2026 11FI2 SebH Objektorientierte Programmierung" with
+ * the short name "2026 11FI2 SebH OOP". Schools can set their own scheme as regular expressions for full and short name
+ * (settings autoapprovefullname and autoapproveshortname): the group "class" names the class, and the optional group "key"
+ * has to be the same in full and short name. The new course goes into the category of the newest course of the same class
+ * (archive categories left out), hidden, with the requester as teacher. One person chosen in the settings gets a message
+ * to check it.
  *
  * @package    local_coursefiles
  * @copyright  2026 Holger Sebastião
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class autoapprove {
-    /** @var string full name: school year, class, initials, subject */
-    const FULLNAME = '/^20\d{2} [0-9A-Za-zÄÖÜäöü][0-9A-Za-zÄÖÜäöü-]{1,9} [A-Za-zÄÖÜäöüß]{2,6} \S.*$/u';
-    /** @var string short name: school year, class, initials, short subject */
-    const SHORTNAME = '/^20\d{2} [0-9A-Za-zÄÖÜäöü][0-9A-Za-zÄÖÜäöü-]{1,9} [A-Za-zÄÖÜäöüß]{2,6} \S{1,12}$/u';
+    /** @var string default full name: school year, class, initials, subject */
+    const FULLNAME = '/^(?<key>20\d{2} (?<class>[0-9A-Za-zÄÖÜäöü][0-9A-Za-zÄÖÜäöü-]{1,9}) [A-Za-zÄÖÜäöüß]{2,6}) \S.*$/u';
+    /** @var string default short name: school year, class, initials, short subject */
+    const SHORTNAME = '/^(?<key>20\d{2} (?<class>[0-9A-Za-zÄÖÜäöü][0-9A-Za-zÄÖÜäöü-]{1,9}) [A-Za-zÄÖÜäöüß]{2,6}) \S{1,12}$/u';
+    /** @var string default: categories whose path contains this are archives */
+    const ARCHIVE = 'Archiv';
+
+    /**
+     * Regular expression for the full name (setting, else the default).
+     *
+     * @return string
+     */
+    public static function fullname_pattern(): string {
+        $pattern = trim((string)get_config('local_coursefiles', 'autoapprovefullname'));
+        return self::valid_pattern($pattern) ? $pattern : self::FULLNAME;
+    }
+
+    /**
+     * Regular expression for the short name (setting, else the default).
+     *
+     * @return string
+     */
+    public static function shortname_pattern(): string {
+        $pattern = trim((string)get_config('local_coursefiles', 'autoapproveshortname'));
+        return self::valid_pattern($pattern) ? $pattern : self::SHORTNAME;
+    }
+
+    /**
+     * Whether a pattern can be used: a valid regular expression with a group named "class".
+     *
+     * @param string $pattern
+     * @return bool
+     */
+    public static function valid_pattern(string $pattern): bool {
+        if ($pattern === '' || !preg_match('/\(\?P?<class>/', $pattern)) {
+            return false;
+        }
+        return @preg_match($pattern, '') !== false;
+    }
+
+    /**
+     * Class and key of a name, or null if it does not follow the pattern.
+     *
+     * @param string $pattern
+     * @param string $name
+     * @return array|null ['class' => string, 'key' => string|null]
+     */
+    public static function parse(string $pattern, string $name): ?array {
+        if (!preg_match($pattern, trim($name), $m) || !isset($m['class']) || $m['class'] === '') {
+            return null;
+        }
+        return ['class' => $m['class'], 'key' => isset($m['key']) && $m['key'] !== '' ? $m['key'] : null];
+    }
 
     /**
      * Whether automatic approval is turned on.
@@ -50,12 +102,24 @@ class autoapprove {
      * @return bool
      */
     public static function follows_scheme(string $fullname, string $shortname): bool {
-        if (!preg_match(self::FULLNAME, $fullname) || !preg_match(self::SHORTNAME, $shortname)) {
-            return false;
+        return self::class_of($fullname, $shortname) !== null;
+    }
+
+    /**
+     * Class of a request that follows the scheme: full and short name match, with the same class and key.
+     *
+     * @param string $fullname
+     * @param string $shortname
+     * @return string|null
+     */
+    public static function class_of(string $fullname, string $shortname): ?string {
+        $a = self::parse(self::fullname_pattern(), $fullname);
+        $b = self::parse(self::shortname_pattern(), $shortname);
+        if (!$a || !$b) {
+            return null;
         }
-        $a = array_slice(explode(' ', $fullname), 0, 3);
-        $b = array_slice(explode(' ', $shortname), 0, 3);
-        return \core_text::strtolower(implode(' ', $a)) === \core_text::strtolower(implode(' ', $b));
+        $same = fn($x, $y) => \core_text::strtolower((string)$x) === \core_text::strtolower((string)$y);
+        return $same($a['class'], $b['class']) && $same($a['key'], $b['key']) ? $a['class'] : null;
     }
 
     /**
@@ -71,19 +135,27 @@ class autoapprove {
         $records = $DB->get_records_select(
             'course',
             "id <> :site AND $like",
-            ['site' => SITEID, 'pattern' => '% ' . $DB->sql_like_escape($class) . ' %'],
+            ['site' => SITEID, 'pattern' => '%' . $DB->sql_like_escape($class) . '%'],
             'id DESC',
             'id, fullname, category',
             0,
             50
         );
+        $pattern = self::fullname_pattern();
+        $archive = trim((string)(get_config('local_coursefiles', 'autoapprovearchive') === false
+            ? self::ARCHIVE : get_config('local_coursefiles', 'autoapprovearchive')));
         foreach ($records as $record) {
-            $parts = explode(' ', trim($record->fullname));
-            if (count($parts) < 2 || \core_text::strtolower($parts[1]) !== $class) {
+            $parsed = self::parse($pattern, $record->fullname);
+            if (!$parsed || \core_text::strtolower($parsed['class']) !== $class) {
                 continue;
             }
             $category = \core_course_category::get($record->category, IGNORE_MISSING, true);
-            if (!$category || preg_match('/archiv/i', $category->get_nested_name(false))) {
+            if (
+                !$category || ($archive !== '' && \core_text::strpos(
+                    \core_text::strtolower($category->get_nested_name(false)),
+                    \core_text::strtolower($archive)
+                ) !== false)
+            ) {
                 continue;
             }
             return $category;
@@ -101,10 +173,11 @@ class autoapprove {
      */
     public static function try_approve(string $fullname, string $shortname, string $reason): ?array {
         global $DB, $USER;
-        if (!self::enabled() || !self::follows_scheme($fullname, $shortname)) {
+        $class = self::enabled() ? self::class_of($fullname, $shortname) : null;
+        if ($class === null) {
             return null;
         }
-        $category = self::category_for_class(explode(' ', $fullname)[1]);
+        $category = self::category_for_class($class);
         if (!$category) {
             return null;
         }

@@ -68,6 +68,29 @@ if ($hassiteconfig) {
             get_string('autoapprove_desc', 'local_coursefiles'),
             0
         ));
+        $settings->add(new \local_coursefiles\admin\setting_namepattern(
+            'local_coursefiles/autoapprovefullname',
+            get_string('autoapprovefullname', 'local_coursefiles'),
+            get_string('autoapprovefullname_desc', 'local_coursefiles'),
+            \local_coursefiles\local\autoapprove::FULLNAME,
+            PARAM_RAW,
+            80
+        ));
+        $settings->add(new \local_coursefiles\admin\setting_namepattern(
+            'local_coursefiles/autoapproveshortname',
+            get_string('autoapproveshortname', 'local_coursefiles'),
+            get_string('autoapproveshortname_desc', 'local_coursefiles'),
+            \local_coursefiles\local\autoapprove::SHORTNAME,
+            PARAM_RAW,
+            80
+        ));
+        $settings->add(new admin_setting_configtext(
+            'local_coursefiles/autoapprovearchive',
+            get_string('autoapprovearchive', 'local_coursefiles'),
+            get_string('autoapprovearchive_desc', 'local_coursefiles'),
+            \local_coursefiles\local\autoapprove::ARCHIVE,
+            PARAM_TEXT
+        ));
         $settings->add(new admin_setting_configtext(
             'local_coursefiles/autoapprovenotify',
             get_string('autoapprovenotify', 'local_coursefiles'),

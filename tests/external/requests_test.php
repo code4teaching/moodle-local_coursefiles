@@ -216,4 +216,36 @@ final class requests_test extends \advanced_testcase {
         $this->assertGreaterThan(0, $r['requestid']);
         $this->assertEquals(2, $DB->count_records('course_request'));
     }
+
+    /**
+     * A school can set its own naming scheme; invalid patterns fall back to the default.
+     */
+    public function test_autoapprove_own_scheme(): void {
+        $this->resetAfterTest();
+        $this->enable_requests();
+        set_config('autoapprove', 1, 'local_coursefiles');
+        set_config('autoapprovefullname', '/^(?<class>[0-9]{1,2}[a-z]) · .+ · (?<key>20\d{2})$/u', 'local_coursefiles');
+        set_config('autoapproveshortname', '/^(?<class>[0-9]{1,2}[a-z])-\S+-(?<key>20\d{2})$/u', 'local_coursefiles');
+        set_config('autoapprovearchive', 'Ehemalige', 'local_coursefiles');
+        $cat = $this->getDataGenerator()->create_category(['name' => 'Klasse 7']);
+        $old = $this->getDataGenerator()->create_category(['name' => 'Ehemalige']);
+        $this->getDataGenerator()->create_course(['fullname' => '7b · Deutsch · 2025', 'category' => $cat->id]);
+        $this->getDataGenerator()->create_course(['fullname' => '7b · Englisch · 2024', 'category' => $old->id]);
+        $this->setUser($this->getDataGenerator()->create_user());
+        $sink = $this->redirectMessages();
+
+        $r = request_course::execute('7b · Mathematik · 2026', '7b-MA-2026');
+        $this->assertGreaterThan(0, $r['courseid']);
+        $this->assertEquals($cat->id, get_course($r['courseid'])->category);
+        // Year differs between full and short name: stays a request.
+        $r = request_course::execute('7b · Physik · 2026', '7b-PH-2025');
+        $this->assertSame(0, $r['courseid']);
+        $sink->close();
+
+        $this->assertTrue(\local_coursefiles\local\autoapprove::valid_pattern('/^(?<class>\S+) .+$/u'));
+        $this->assertFalse(\local_coursefiles\local\autoapprove::valid_pattern('/^(\S+) .+$/u'));
+        $this->assertFalse(\local_coursefiles\local\autoapprove::valid_pattern('/^(?<class>\S+/u'));
+        set_config('autoapprovefullname', 'kaputt', 'local_coursefiles');
+        $this->assertSame(\local_coursefiles\local\autoapprove::FULLNAME, \local_coursefiles\local\autoapprove::fullname_pattern());
+    }
 }

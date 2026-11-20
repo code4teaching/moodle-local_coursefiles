@@ -25,7 +25,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['autoapprove'] = 'Approve course requests automatically';
-$string['autoapprove_desc'] = 'If a request follows the scheme “school year class initials subject” (e.g. 2026 11FI2 SebH Objektorientierte Programmierung, short name 2026 11FI2 SebH OOP) and the class already has a course, the course is created at once: hidden, in the category of the newest course of that class, with the requester as teacher. Otherwise it stays a normal request.';
+$string['autoapprove_desc'] = 'If a request follows the naming scheme below and the class already has a course, the course is created at once: hidden, in the category of the newest course of that class (archive categories left out), with the requester as teacher. Otherwise it stays a normal request. The default scheme is “school year class initials subject”, e.g. 2026 11FI2 SebH Objektorientierte Programmierung, short name 2026 11FI2 SebH OOP.';
+$string['autoapprovearchive'] = 'Archive categories';
+$string['autoapprovearchive_desc'] = 'Categories whose path contains this text (not case-sensitive) are left out when looking for the category of a class. Empty: none.';
 $string['autoapprovedbody'] = '{$a->requester} requested a course, and it was created at once.
 
 Name: {$a->fullname}
@@ -34,10 +36,14 @@ Category: {$a->category}
 
 The course is hidden. Please check the name and the category: {$a->url}';
 $string['autoapprovedsubject'] = 'Course created automatically: {$a->fullname}';
+$string['autoapprovefullname'] = 'Scheme for the full name';
+$string['autoapprovefullname_desc'] = 'Regular expression with delimiters. The group (?&lt;class&gt;…) names the class; the courses of the same class decide the category. An optional group (?&lt;key&gt;…) has to be the same in full and short name.';
 $string['autoapproveheading'] = 'Course requests';
 $string['autoapproveheading_desc'] = 'Teachers request courses from VisuDesk. Courses can be created at once and checked afterwards.';
 $string['autoapprovenotify'] = 'Notify about created courses';
 $string['autoapprovenotify_desc'] = 'User name of the person who checks automatically created courses. Empty: the main administrator.';
+$string['autoapproveshortname'] = 'Scheme for the short name';
+$string['autoapproveshortname_desc'] = 'Regular expression with delimiters, with the same groups (?&lt;class&gt;…) and, if used, (?&lt;key&gt;…) as the full name.';
 $string['availabilitydisabled'] = 'Restrict access is turned off on this site (Site administration → Advanced features → Enable restricted access), so a release date would have no effect.';
 $string['backupfailed'] = 'The backup could not be created.';
 $string['backupwithusers'] = 'The site settings force user data into course backups. No backup without user data is possible.';
@@ -47,6 +53,7 @@ $string['connectnoservice'] = 'The web service {$a} is not available for connect
 $string['connectnotallowed'] = 'You cannot get a key for the web service {$a} yet. Please contact the Moodle administration.';
 $string['connectquestion'] = '<p>VisuDesk on this computer wants to work with your Moodle account <strong>{$a->name}</strong> (web service “{$a->service}”).</p><p>VisuDesk can then do in your courses what you can do in Moodle: upload files, create quizzes and look at submissions. The key goes only to VisuDesk on this computer and is stored in its keychain.</p><p>You can remove the key at any time under Preferences → Security keys.</p>';
 $string['connecttitle'] = 'Connect VisuDesk';
+$string['errornamepattern'] = 'This needs to be a valid regular expression with delimiters and a group named “class”, for example /^(?<class>\\S+) .+$/u.';
 $string['feedbackfilesdisabled'] = 'Feedback files are turned off in this assignment. Turn on “Feedback files” under Feedback types in the assignment settings.';
 $string['filetoobig'] = 'The file {$a->filename} ({$a->size}) is larger than the upload limit of this course ({$a->max}).';
 $string['gradenotinscale'] = 'This grade is not an item of the scale of the assignment.';
