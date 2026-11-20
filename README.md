@@ -4,6 +4,8 @@ Web service functions that let external tools – for example a teacher's own da
 through the [MCP web service plugin](https://github.com/onbirdev/moodle-webservice_mcp) – put files into a course
 and show or hide activities.
 
+![VisuDesk, a Mac app built on Course Files](docs/visudesk.png)
+
 ## Why this plugin exists
 
 Course Files was developed for **[VisuDesk](https://visucode.de/visudesk/)**, a free Mac app for teachers. We wanted
