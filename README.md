@@ -1,5 +1,10 @@
 # Course Files (local_coursefiles)
 
+> **Renamed:** from version 1.0.0 this plugin is called **local_visudesk** →
+> https://github.com/code4teaching/moodle-local_visudesk. Another plugin in the Moodle plugins directory already uses
+> the name local_coursefiles. Install local_visudesk next to this one; it takes over the settings. This repository
+> is no longer developed.
+
 Web service functions that let external tools – for example a teacher's own dashboard or an AI assistant connected
 through the [MCP web service plugin](https://github.com/onbirdev/moodle-webservice_mcp) – put files into a course
 and show or hide activities.
